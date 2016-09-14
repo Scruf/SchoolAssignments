@@ -12,9 +12,11 @@ class Print extends Fib implements Runnable{
 
 	@Override
 	public void run(){
-		System.out.print("Some things are happens\n");
-		
-
+		try{
+			System.out.printf("Printing element %s ",super.getValue(super.F.length-1));
+		}catch(InterruptedException ie){
+			ie.printStackTrace();
+		}
 	}
 }
 
@@ -28,25 +30,33 @@ class Compute extends Fib implements Runnable{
 		super(n);
 		this.a = BigInteger.valueOf(a);
 		this.b = BigInteger.valueOf(b);
-		
-		super.F[0] = this.a;
-		super.F[1] = this.b;
-		
-		if(this.a.compareTo(this.b)==1){
-			System.err.print("Second argument must be greater than first\n");
-			System.exit(0);
+		this.n =  n;
+		try{
+			super.putValue(0,this.a);
+			super.putValue(1,this.b);
+		}catch (InterruptedException ie){
+
 		}
 		
 	}
 
 	@Override
 	public void run(){
-		synchronized(super.F){
-			for (int i=2;i<super.F.length;i++){
-				super.F[i] = super.F[i-1].add(super.F[i-2]);
-			}
-			System.out.print(super.F[super.F.length-1]);
+	
+		if(this.a.compareTo(this.b)==1){
+			System.err.print("Second argument must be greater than first\n");
+			System.exit(0);
 		}
+			try{
+				
+			
+				BigInteger next = super.getValue(this.n-2).add(super.getValue(this.n-1));
+				
+				super.putValue(n,next);
+			}catch (InterruptedException ie){
+				ie.printStackTrace();
+			}	
+					
 		
 	}
 }
@@ -54,27 +64,37 @@ class Compute extends Fib implements Runnable{
 
 
 public class Fib{
-	//size of the list
+	
 	public BigInteger F[];
+	int n;
 	Fib(int n){
 		if(n<0){
 			System.err.print("N must be >= 0\n");
 			System.exit(0);
 		}else{
-			F = new BigInteger[n];	
+			F = new BigInteger[n+1];
+			this.n = n;	
 		}
 		
 	
 	}
-	public void putValue(int i, BigInteger element){
-		if (F[i]==null)
+	public synchronized void putValue(int i, BigInteger element)throws InterruptedException{
+		if (F[i] == null){
 			F[i] = element;
+			System.out.printf("Tying to put %s \n",element.toString());
+			notifyAll();
+		}
 		else{
 			System.err.printf("Element at position %d exists in the list\n",i);
 			System.exit(0);
 		}
 	}
-	public BigInteger getValue(int i){
+	public synchronized BigInteger getValue(int i) throws InterruptedException{
+		while(F[i]==null){
+			System.out.printf("Still stuck in %d-> ",i);
+			System.out.println(F[i]);
+			wait();
+		}
 		return F[i];
 	}
 
@@ -95,9 +115,9 @@ public class Fib{
 			System.exit(0);
 		}
 		Fib fib  = new Fib(n);
-		// Compute comp = new Compute(a,b,n);
-		new Thread(new Compute(a,b,n)).start();
-		Print print = new Print(n);
-		
+		new Thread( new Print(n)).start();
+		for(int i=n;i>=0;i--){
+			new Thread(new Compute(a,b,n)).start();
+		}
 	}	
 }
