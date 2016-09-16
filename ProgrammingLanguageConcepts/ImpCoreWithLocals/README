@@ -1,0 +1,9 @@
+Aaron Bowen and James McCants
+
+We solved the problem of adding local variables by creating a new value 
+environment for locals. We passed this environment through eval.c. Our most
+significant changes were in the VAR and SET sections of eval where the 
+semantics - requiring local variables with the same name as global or formal
+variables to be used first - are defined. We initialized the values of variables
+in the locals environment to 0 in the USERDEF section of the eval function with 
+a recursive helper function called locallist.
