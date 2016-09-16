@@ -1,5 +1,7 @@
+/* eval.c 40a */
 #include "all.h"
-/* eval.c 42d */
+
+/* eval helpers 44a */
 static Valuelist evallist(Explist es, Valenv globals, Funenv functions, Valenv
                                                                        formals, Valenv locals){
     if(es == NULL)
@@ -16,29 +18,29 @@ Valuelist locallist(int temp, Valuelist val){
     }
     return mkVL(0,val);
 }
-/* eval.c 43a */
-Value eval(Exp e, Valenv globals, Funenv functions, Valenv formals,Valenv locals) {
-    checkoverflow(1000000 * sizeof(char *));
-                                  
+/* eval.c 40b */
+Value eval(Exp e, Valenv globals, Funenv functions, Valenv formals, Valenv locals) {
+    checkoverflow(1000000 * sizeof(char *)); /* OMIT */
     switch (e->alt) {
     case LITERAL:
-        /* evaluate [[e->u.literal]] and return the result 43b */
-
+        /* evaluate [[e->u.literal]] and return the result 40c */
         return e->u.literal;
     case VAR:
-        /* evaluate [[e->u.var]] and return the result 44a */
-        if(isvalbound(e->u.var,locals))
+        /* evaluate [[e->u.var]] and return the result 41a */
+             if(isvalbound(e->u.var,locals))
             return fetchval(e->u.var,locals);
         if (isvalbound(e->u.var, formals))
             return fetchval(e->u.var, formals);
         else if (isvalbound(e->u.var, globals))
             return fetchval(e->u.var, globals);
         else
-            runerror("unbound variable %n", e->u.var);
-        assert(0);  
+            error("unbound variable %n", e->u.var);
+        assert(0); 
+        return 0;  
     case SET:
-        /* evaluate [[e->u.set]] and return the result 44b */
+        /* evaluate [[e->u.set]] and return the result 41b */
         {
+              
             Value v = eval(e->u.set.exp, globals, functions, formals,locals);
             if(isvalbound(e->u.set.name,locals))
                 bindval(e->u.set.name,v,locals);
@@ -47,98 +49,82 @@ Value eval(Exp e, Valenv globals, Funenv functions, Valenv formals,Valenv locals
             else if (isvalbound(e->u.set.name, globals))
                 bindval(e->u.set.name, v, globals);
             else
-                runerror("tried to set unbound variable %n in %e", e->u.set.name
+                error("tried to set unbound variable %n in %e", e->u.set.name
                                                                            , e);
             return v;
         }
     case IFX:
-        /* evaluate [[e->u.ifx]] and return the result 45a */
-        if (eval(e->u.ifx.cond, globals, functions, formals,locals) != 0)
+        /* evaluate [[e->u.ifx]] and return the result 42a */
+         if (eval(e->u.ifx.cond, globals, functions, formals,locals) != 0)
             return eval(e->u.ifx.true, globals, functions, formals,locals);
         else
             return eval(e->u.ifx.false, globals, functions, formals,locals);
     case WHILEX:
-        /* evaluate [[e->u.whilex]] and return the result 45b */
-        while (eval(e->u.whilex.cond, globals, functions, formals,locals) != 0)
+        /* evaluate [[e->u.whilex]] and return the result 42b */
+         while (eval(e->u.whilex.cond, globals, functions, formals,locals) != 0)
             eval(e->u.whilex.exp, globals, functions, formals,locals);
         return 0;
     case BEGIN:
-        /* evaluate [[e->u.begin]] and return the result 46a */
+        /* evaluate [[e->u.begin]] and return the result 43a */
         {
-            Value lastval = 0;
-            Explist es;
-            for ( es = e->u.begin; es; es = es->tl)
-                lastval = eval(es->hd, globals, functions, formals,locals);
-            return lastval;
+            Explist el;
+            Value v = 0;
+            for (el=e->u.begin; el; el=el->tl)
+                v = eval(el->hd, globals, functions, formals, locals);
+            return v;
         }
     case APPLY:
-        /* evaluate [[e->u.apply]] and return the result 46b */
+        /* evaluate [[e->u.apply]] and return the result 43b */
         {
             Fun f;
 
-/* make [[f]] the function denoted by [[e->u.apply.name]], or call [[runerror]] 46c */
+/* make [[f]] the function denoted by [[e->u.apply.name]], or call [[error]] 43c */
             if (!isfunbound(e->u.apply.name, functions))
-                runerror("call to undefined function %n in %e", e->u.apply.name,
-                                                                             e);
+                error("call to undefined function %n", e->u.apply.name);
             f = fetchfun(e->u.apply.name, functions);
             switch (f.alt) {
             case USERDEF:
-                /* apply [[f.u.userdef]] and return the result 47b */
+                /* apply [[f.u.userdef]] and return the result 44b */
                 {
-                    Namelist  xs = f.u.userdef.formals;
-                    Valuelist vs = evallist(e->u.apply.actuals, globals,
-                                                            functions, formals,locals);
-                    Namelist local_xs = f.u.userdef.locals;
-                    Valuelist local_vs = locallist(lengthNL(f.u.userdef.locals),NULL);
-                    checkargc(e, lengthNL(xs), lengthVL(vs));
-                    return eval(f.u.userdef.body, globals, functions, mkValenv(xs,vs),mkValenv(
-                                                                       local_xs,local_vs));
+                    Namelist  nl = f.u.userdef.formals;
+                    Valuelist vl = evallist(e->u.apply.actuals,globals,  
+                                            functions, formals, locals);
+
+                    int num_of_args = lengthNL(f.u.userdef.locals);
+
+                    Namelist  local_xs = f.u.userdef.locals;
+                    Valuelist local_ys = locallist(num_of_args, NULL);
+
+                    checkargc(e, lengthNL(nl), lengthVL(vl));
+                    return eval(f.u.userdef.body, globals, functions, 
+                                mkValenv(nl, vl), mkValenv(local_xs, local_ys));
                 }
             case PRIMITIVE:
-                /* apply [[f.u.primitive]] and return the result 48a */
+                /* apply [[f.u.primitive]] and return the result 45a */
                 {
-                    Valuelist vs = evallist(e->u.apply.actuals, globals,
-                                                            functions, formals,locals);
+                    Valuelist vl = evallist(e->u.apply.actuals, globals,
+                                            functions, formals, locals);
                     if (f.u.primitive == strtoname("print"))
-
-              /* apply \impcore\ primitive [[print]] to [[vs]] and return 48b */
+                        /* apply [[print]] to [[vl]] and return 45b */
                         {
-                            checkargc(e, 1, lengthVL(vs));
-                            Value v = nthVL(vs, 0);
-                            print("%v", v);
-                            return v;
-                        }
-                    else if (f.u.primitive == strtoname("println"))
-
-            /* apply \impcore\ primitive [[println]] to [[vs]] and return 48c */
-                        {
-                            checkargc(e, 1, lengthVL(vs));
-                            Value v = nthVL(vs, 0);
+                            Value v;
+                            checkargc(e, 1, lengthVL(vl));
+                            v = nthVL(vl, 0);
                             print("%v\n", v);
                             return v;
                         }
-                    else if (f.u.primitive == strtoname("printu"))
-
-             /* apply \impcore\ primitive [[printu]] to [[vs]] and return 48d */
-                        {
-                            checkargc(e, 1, lengthVL(vs));
-                            Value v = nthVL(vs, 0);
-                            print_utf8(v);
-                            return v;
-                        }
                     else
-
-                       /* apply arithmetic primitive to [[vs]] and return 49a */
+                        /* apply arithmetic primitive to [[vl]] and return 46 */
                         {
-                            const char *s = nametostr(f.u.primitive);
+                            const char *s;
                             Value v, w;
 
-/* check that [[vs]] has exactly two values, and assign them to [[v]] and [[w]] 49b */
-                            checkargc(e, 2, lengthVL(vs));
-                            v = nthVL(vs, 0);
-                            w = nthVL(vs, 1);
-                            assert(strlen(s) == 1);
+                            checkargc(e, 2, lengthVL(vl));
+                            v = nthVL(vl, 0);
+                            w = nthVL(vl, 1);
 
+                            s = nametostr(f.u.primitive);
+                            assert(strlen(s) == 1);
                             switch (s[0]) {
                             case '<':
                                 return v < w;
@@ -154,54 +140,63 @@ Value eval(Exp e, Valenv globals, Funenv functions, Valenv formals,Valenv locals
                                 return v * w;
                             case '/':
                                 if (w == 0)
-                                    runerror("division by zero in %e", e);
+                                    error("division by zero in %e", e);
                                 return v / w;
                             default:
                                 assert(0);
+                                return 0;   /* not reached */
                             }
                         }
                 }
-            default:
-                assert(0);
             }
+            assert(0);
+            return 0;   /* not reached */
         }
     }
     assert(0);
+    return 0;   /* not reached */
 }
-/* eval.c 50a */
-void readevalprint(XDefstream xdefs, Valenv globals, Funenv functions, Echo echo
-                                                                             ) {
-    UnitTestlist pending_unit_tests = NULL;
-                                            // to be run when xdefs is exhausted
+/* eval.c 47a */
+void readevalprint(XDefreader reader, Valenv globals, Funenv functions, Echo
+                                                                         echo) {
+    XDef d;
+    UnitTestlist unit_tests = NULL;
 
-    for (XDef d = getxdef(xdefs); d; d = getxdef(xdefs))
+    while ((d = readxdef(reader)))
         switch (d->alt) {
+        case DEF:
+            evaldef(d->u.def, globals, functions, echo);
+            break;
         case TEST:
-            pending_unit_tests = mkUL(d->u.test, pending_unit_tests);
+            unit_tests = mkUL(d->u.test, unit_tests);
             break;
         case USE:
 
-/* evaluate [[d->u.use]], possibly mutating [[globals]] and [[functions]] 50c */
+/* evaluate [[d->u.use]], possibly mutating [[globals]] and [[functions]] 47b */
             {
                 const char *filename = nametostr(d->u.use);
                 FILE *fin = fopen(filename, "r");
                 if (fin == NULL)
-                    runerror("cannot open file \"%s\"", filename);
-                readevalprint(filexdefs(filename, fin, NO_PROMPTS), globals,
-                                                               functions, echo);
+                    error("cannot open file \"%s\"", filename);
+                readevalprint(xdefreader(filereader(filename, fin), NO_PROMPTS),
+                              globals, functions, SILENT);
                 fclose(fin);
             }
-            break;
-        case DEF:
-            evaldef(d->u.def, globals, functions, echo);
             break;
         default:
             assert(0);
         }
 
-    process_tests(pending_unit_tests, globals, functions);
+    set_error_mode(TESTING);
+    /* run the remembered [[unit_tests]], last one first 49e */
+    {   int npassed = tests_passed(unit_tests, globals, functions);
+        int ntests  = lengthUL(unit_tests);
+        report_test_results(npassed, ntests);
+    }
+    set_error_mode(NORMAL);
 }
-/* eval.c 51a */
+
+/* eval.c 48a */
 void evaldef(Def d, Valenv globals, Funenv functions, Echo echo) {
     switch (d->alt) {
     case VAL:
@@ -244,4 +239,86 @@ void evaldef(Def d, Valenv globals, Funenv functions, Echo echo) {
         return;
     }
     assert(0);
+}
+
+/* eval.c 703a */
+int tests_passed(UnitTestlist tests, Valenv globals, Funenv functions) {
+    if (tests == NULL)
+        return 0;
+    else {
+        int n = tests_passed(tests->tl, globals, functions);
+        UnitTest t = tests->hd;
+        switch (t->alt) {
+        case CHECK_EXPECT:
+
+          /* run [[check-expect]] test [[t]], returning [[n]] or [[n+1]] 703b */
+            {   Value check;    /* results of evaluating first expression */
+                Value expect;   /* results of evaluating second expression */
+                Valenv locals = mkValenv(NULL, NULL);
+                if (setjmp(testjmp)) {
+
+/* report that evaluating [[t->u.check_expect.check]] failed with an error 704c */
+                    fprint(stderr,
+                     "Check-expect failed: expected %e to evaluate to the same "
+
+                            "value as %e, but evaluating %e causes an error.\n",
+                                   t->u.check_expect.check, t->
+                                                          u.check_expect.expect,
+                                   t->u.check_expect.check);
+                    return n;
+                }
+                check = eval(t->u.check_expect.check, globals, functions, 
+                             locals, mkValenv(NULL, NULL));
+                if (setjmp(testjmp)) {
+
+/* report that evaluating [[t->u.check_expect.expect]] failed with an error 704d */
+                    fprint(stderr,
+                     "Check-expect failed: expected %e to evaluate to the same "
+
+                            "value as %e, but evaluating %e causes an error.\n",
+                                   t->u.check_expect.check, t->
+                                                          u.check_expect.expect,
+                                   t->u.check_expect.expect);
+                    return n;
+                }
+                expect = eval(t->u.check_expect.expect, globals, functions,
+                              locals, mkValenv(NULL, NULL));
+
+                if (check != expect) {
+                    /* report failure because the values are not equal 704b */
+                    fprint(stderr,
+                           "Check-expect failed: expected %e to evaluate to %v",
+                           t->u.check_expect.check, expect);
+                    if (t->u.check_expect.expect->alt != LITERAL)
+                        fprint(stderr, " (from evaluating %e)", t->
+                                                         u.check_expect.expect);
+                    fprint(stderr, ", but it's %v.\n", check);
+                    return n;
+                } else {
+                    return n+1;
+                }
+            }
+        case CHECK_ERROR:
+
+           /* run [[check-error]] test [[t]], returning [[n]] or [[n+1]] 704a */
+            {   Value check;    /* results of evaluating the expression */
+                Valenv locals = mkValenv(NULL, NULL);
+                if (setjmp(testjmp)) {
+                    return n+1; /* error occurred, so the test passed */
+                }
+                check = eval(t->u.check_expect.check, globals, functions, 
+                             locals, mkValenv(NULL, NULL));
+
+       /* report that evaluating [[t->u.check_error]] produced [[check]] 704e */
+                fprint(stderr,
+                    "Check-error failed: evaluating %e was expected to produce "
+
+                            "an error, but instead it produced the value %v.\n",
+                               t->u.check_error, check);
+
+                return n;
+            }    
+        }
+        assert(0);
+    }
 }
