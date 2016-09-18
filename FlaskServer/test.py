@@ -1,23 +1,26 @@
 from flask import Flask
 from flask import request
-from flask import send_from_directory
+from flask import send_from_directory, after_this_request
 from dataset import DataSet
 import json
 import pandas
+import os
+import uuid
+from pprint import pprint
 app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
+	pprint('Hello')
 	dataset = DataSet()
-	#save data to json file with a name data.json
-	with open('data.json','w') as outfile:
-		#dump list of dicionaries into .json file
-		json.dump(dataset.get_data(),outfile,indent=4)
-	#read json file into xlsx
-	pandas.read_json('data.json').to_excel('output.xlsx')
-	#download the file whe redirecting to the url
-	#first @param is direcctory
-	#second @param is the name of the file which will downloaded
-	return send_from_directory(".", 'output.xlsx',as_attachment=True)
+	json_to_exel = pandas.read_json(json.dumps(dataset.get_data()))
+	file_name = str(uuid.uuid4())+'.xlsx'
+	file_to_delete = json_to_exel.to_excel(file_name,index=False)
+	
+	@after_this_request
+	def cleanup(response):
+	
+		os.remove(file_name)
+		return response
 
-
+	return send_from_directory(".", file_name, as_attachment=True)
