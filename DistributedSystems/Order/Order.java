@@ -22,22 +22,26 @@ public class Order extends Task{
 			}
 			p = new BigInteger(args[0]);
 			g = new BigInteger(args[1]);
-			if (p.compareTo(new BigInteger("2"))==0)
-				System.out.print("It worked");
+			if (p.compareTo(new BigInteger("2"))==-1){
+				System.err.print("P must be >=2\n");
+				System.exit(0);
+			}
+			if(!p.isProbablePrime(64)){
+				System.err.printf("%s is not prime number\n",p.toString());
+				System.exit(0);
+			}
+			if(g.compareTo(new BigInteger("1"))==-1){
+				System.err.print("G must be >= 1\n");
+				System.exit(0);
+			}
+			//fix it
+			if (g.compareTo(p.subtract(new BigInteger("1")))!=-1){
+				System.err.print("G must be in range 1<=g<=p-1\n");
+				System.exit(0);
+			}
+			
 		}
 	}
-	 private static void usage()
-      {
-      System.err.println ("Usage: java pj2 edu.rit.pj2.example.PrimeSeq <number> ...");
-      terminate (1);
-      }
 
-   /**
-    * Specify that this task requires one core.
-    */
-   protected static int coresRequired()
-      {
-      return 1;
-      }
-
+	
 }
