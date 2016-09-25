@@ -34,11 +34,11 @@ public class Order extends Task{
 				System.err.print("G must be >= 1\n");
 				System.exit(0);
 			}
-			//fix it
-			if (g.compareTo(p.subtract(new BigInteger("1")))!=-1){
-				System.err.print("G must be in range 1<=g<=p-1\n");
+			if(p.compareTo(g)==-1){
+				System.err.print("p must be less or equals\n");
 				System.exit(0);
 			}
+			
 			
 		}
 	}
