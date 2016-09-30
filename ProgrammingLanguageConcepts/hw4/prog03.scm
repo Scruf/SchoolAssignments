@@ -1,5 +1,5 @@
-;; Name: 
-;; Time spent on assignment: 
+;; Name: Egor Kozitski(ek5442)
+;; Time spent on assignment: 30 hours, had some troubles with unions and first part
 ;; Collaborators: 
 
 
