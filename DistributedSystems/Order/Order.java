@@ -5,6 +5,17 @@ import edu.rit.pj2.*;
 
 
 public class Order extends Task{
+	private BigInteger p;
+	private BigInteger g;
+	public Order(BigInteger p,BigInteger g){
+		this.p = p;
+		this.g = g;
+	}
+	public void compute(){
+		Integer n  = p.intValue()-1;
+		System.out.print(n);
+		
+	}
 
 	public void main(String []args)throws Exception{
 		if(args.length<2){
