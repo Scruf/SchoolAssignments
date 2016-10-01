@@ -2,28 +2,19 @@
 
 import java.math.*;
 import edu.rit.pj2.*;
-
+import java.util.*;
 
 public class Order extends Task{
-	private BigInteger p;
-	private BigInteger g;
-	public Order(BigInteger p,BigInteger g){
-		this.p = p;
-		this.g = g;
-	}
-	public void compute(){
-		Integer n  = p.intValue()-1;
-		System.out.print(n);
-		
-	}
+
 
 	public void main(String []args)throws Exception{
+		 	BigInteger p = new BigInteger("0");
+			BigInteger g = new BigInteger("0");
 		if(args.length<2){
 			System.err.print("Invalid number of arguments\n");
 			System.exit(0);
 		}else{
-			BigInteger p;
-			BigInteger g;
+			
 			try{
 				Integer a = Integer.parseInt(args[0]);
 				Integer b = Integer.parseInt(args[1]);
@@ -49,10 +40,22 @@ public class Order extends Task{
 				System.err.print("p must be less or equals\n");
 				System.exit(0);
 			}
-			
-			
 		}
+		long n =  p.intValue()-1;
+		parallelFor(0,n-1).exec(new LongLoop(){
+			BigInteger mod;
+			List<BigInteger> successor;
+			public void start(){
+				successor = new ArrayList<BigInteger>();
+				System.out.print(successor);
+			}
+			public void run(long o){
+				mod = new BigInteger("5").modPow(new BigInteger(Long.toString(o)),new BigInteger("23"));
+				successor.add(mod);
+			}
+		});
 	}
+	
 
 	
 }
