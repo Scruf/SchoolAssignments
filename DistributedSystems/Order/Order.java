@@ -43,34 +43,33 @@ public class Order extends Task{
 				System.exit(0);
 			}
 		}
-		IntVbl count = new IntVbl(1);
+		
 		int n =  p.intValue()-1;
-		List<BigInteger> successor = new ArrayList<BigInteger>();
+		
+		IntVbl max_number = new IntVbl(0);
 		parallelFor(0,n-1).exec(new Loop(){
+			IntVbl local_max;
+			IntVbl max ;
 			BigInteger mod;
-			IntList list;
 			public void start(){
-				  list = new IntList();
-				
+					local_max = threadLocal(max_number);			
+					max = new IntVbl(0);
 			}
 			public void run(int i ){
-
 				mod = new BigInteger("5").modPow(new BigInteger(Integer.toString(i)),new BigInteger("23"));
-				list.add(0,mod.intValue());
-
+				if(max.item<mod.intValue()){
+					max.set(new IntVbl(mod.intValue()));
+				}
 			}
 			public void finish(){
-				System.out.print(list.size());
+				System.out.print(max);
 				System.out.print("\n");
-				System.out.print(list.toString());
-				System.out.print("\n");
-
+				if(Integer.parseInt(local_max.toString())<Integer.parseInt(max.toString())){
+					local_max.set(max);
+				}
 			}
 		});
-		
+		// System.out.print(max_number);
 		
 	}
-	
-
-	
 }
