@@ -2,6 +2,8 @@
 
 import java.math.*;
 import edu.rit.pj2.*;
+import edu.rit.util.*;
+import edu.rit.pj2.vbl.*;
 import java.util.*;
 
 public class Order extends Task{
@@ -41,19 +43,32 @@ public class Order extends Task{
 				System.exit(0);
 			}
 		}
-		long n =  p.intValue()-1;
-		parallelFor(0,n-1).exec(new LongLoop(){
+		IntVbl count = new IntVbl(1);
+		int n =  p.intValue()-1;
+		List<BigInteger> successor = new ArrayList<BigInteger>();
+		parallelFor(0,n-1).exec(new Loop(){
 			BigInteger mod;
-			List<BigInteger> successor;
+			IntList list;
 			public void start(){
-				successor = new ArrayList<BigInteger>();
-				System.out.print(successor);
+				  list = new IntList();
+				
 			}
-			public void run(long o){
-				mod = new BigInteger("5").modPow(new BigInteger(Long.toString(o)),new BigInteger("23"));
-				successor.add(mod);
+			public void run(int i ){
+
+				mod = new BigInteger("5").modPow(new BigInteger(Integer.toString(i)),new BigInteger("23"));
+				list.add(0,mod.intValue());
+
+			}
+			public void finish(){
+				System.out.print(list.size());
+				System.out.print("\n");
+				System.out.print(list.toString());
+				System.out.print("\n");
+
 			}
 		});
+		
+		
 	}
 	
 
