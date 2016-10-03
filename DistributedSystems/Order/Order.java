@@ -3,6 +3,7 @@
 import java.math.*;
 import edu.rit.pj2.*;
 import edu.rit.util.*;
+import edu.rit.pj2.vbl.IntVbl.Max;
 import edu.rit.pj2.vbl.*;
 import java.util.*;
 
@@ -46,7 +47,9 @@ public class Order extends Task{
 		
 		int n =  p.intValue()-1;
 		
-		IntVbl max_number = new IntVbl(0);
+		IntVbl max_number;
+		max_number = new IntVbl.Max(0);
+		List<Integer> list = new ArrayList<>();
 		parallelFor(0,n-1).exec(new Loop(){
 			IntVbl local_max;
 			IntVbl max ;
@@ -56,20 +59,16 @@ public class Order extends Task{
 					max = new IntVbl(0);
 			}
 			public void run(int i ){
-				mod = new BigInteger("5").modPow(new BigInteger(Integer.toString(i)),new BigInteger("23"));
-				if(max.item<mod.intValue()){
-					max.set(new IntVbl(mod.intValue()));
-				}
+				mod = new BigInteger("2").modPow(new BigInteger(Integer.toString(i)),new BigInteger("23"));
+				System.out.print(mod);
+				System.out.print("\n");
+				local_max.item = mod.intValue();
 			}
 			public void finish(){
-				System.out.print(max);
-				System.out.print("\n");
-				if(Integer.parseInt(local_max.toString())<Integer.parseInt(max.toString())){
-					local_max.set(max);
-				}
+				
+				
 			}
 		});
-		// System.out.print(max_number);
-		
+		System.out.print(max_number.item);
 	}
 }
