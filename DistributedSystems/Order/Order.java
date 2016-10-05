@@ -60,6 +60,7 @@ public class Order extends Task{
 			}
 			public void run(int i ){
 				mod = new BigInteger("2").modPow(new BigInteger(Integer.toString(i)),new BigInteger("23"));
+			
 				System.out.print(mod);
 				System.out.print("\n");
 				local_max.item = mod.intValue();
