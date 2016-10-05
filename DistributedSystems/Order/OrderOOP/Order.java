@@ -1,7 +1,7 @@
 import java.math.*;
 import edu.rit.pj2.*;
 import edu.rit.util.*;
-import edu.rit.pj2.vbl.IntVbl.Max;
+import edu.rit.pj2.vbl.IntVbl.Min;
 import edu.rit.pj2.vbl.*;
 import java.util.*;
 
@@ -18,8 +18,8 @@ public class Order extends Task{
 		}
 		public void compute(){
 			int n = this.p.intValue()-1;
-			this.max_number = new IntVbl.Max(0);
-			parallelFor(1,n-1).exec(new Loop(){
+			this.max_number = new IntVbl.Min(Integer.MAX_VALUE);
+			parallelFor(1,n).exec(new Loop(){
 				IntVbl local_max;
 				IntVbl max;
 				BigInteger mod;
@@ -28,20 +28,15 @@ public class Order extends Task{
 					max = new IntVbl(0);
 				}
 				public void run(int i){
-					mod = g.modPow(new BigInteger(Integer.toString(i)),p);
-					System.out.print(mod);
-					System.out.print("\n");
-					// System.out.print(g.modPow(mod,p));
-					// System.out.print("\n");
-					if(g.modPow(mod,p).compareTo(new BigInteger("1"))==0){
-						System.out.print("Found some number");
-						local_max.item = mod.intValue();	
-					}
+				
+					if(g.modPow(new BigInteger(Integer.toString(i)),p).compareTo(new BigInteger("1"))==0){
 					
+						local_max.reduce(new IntVbl(i));
+					}
 				}
-
 			});
 			System.out.print(this.max_number.item);
+		
 		}
 		@Override
 		public void run(int i){
