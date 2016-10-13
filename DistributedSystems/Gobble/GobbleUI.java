@@ -35,7 +35,7 @@ public class GobbleUI
 	 *
 	 * @param  name  Player's name.
 	 */
-	private GobbleUI
+	public GobbleUI
 		(String name)
 		{
 		frame = new JFrame ("Gobble -- " + name);
