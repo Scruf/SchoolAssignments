@@ -8,7 +8,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
+import java.io.IOException;
+import javax.swing.SwingUtilities;
 /**
  * Class GobbleUI provides the view object for the network Gobble game.
  *
@@ -35,7 +36,7 @@ public class GobbleUI
 	 *
 	 * @param  name  Player's name.
 	 */
-	public GobbleUI
+	private GobbleUI
 		(String name)
 		{
 		frame = new JFrame ("Gobble -- " + name);
@@ -73,5 +74,27 @@ public class GobbleUI
 		frame.pack();
 		frame.setVisible (true);
 		}
+
+		private static class GobbleUIRef{
+			public GobbleUI ui;
+		}
+		public static GobbleUI create(String name){
+			final GobbleUIRef ref =new GobbleUIRef();
+			onSwingThreadDo(new Runnable(){
+				public void run(){
+					ref.ui = new GobbleUI(name);
+				}
+			});
+			return ref.ui;
+		}
+		private static void onSwingThreadDo(Runnable task){
+			try{
+				SwingUtilities.invokeAndWait(task);
+			}catch(Exception ex){
+				ex.printStackTrace(System.err);
+					
+			}
+		}
+	
 
 	}

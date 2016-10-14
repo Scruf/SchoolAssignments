@@ -15,6 +15,7 @@ public class Gobble {
 			System.err.print("Invlaid <host>\n");
 			System.exit(0);
 		}
-		GobbleUI gobble = new GobbleUI(args[2]);
+		GobbleUI gobble = GobbleUI.create(args[2]);
+
 	}
 }
