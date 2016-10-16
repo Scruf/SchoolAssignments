@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -16,7 +18,7 @@ import javax.swing.SwingUtilities;
  * @author  Alan Kaminsky
  * @version 10-Oct-2016
  */
-public class GobbleUI
+public class GobbleUI implements ModelListener
 	{
 	public static final int R = 4;
 	public static final int C = 4;
@@ -55,8 +57,9 @@ public class GobbleUI
 			for (int c = 0; c < C; ++ c)
 				{
 				SpotButton spot = spotButton[r][c] = new SpotButton();
-				spot.setEnabled (false);
-				p2.add (spot);
+					spot.setEnabled (false);
+					spot.setColor(Color.yellow);
+					p2.add (spot);
 				}
 		p1.add (p2);
 
@@ -70,7 +73,11 @@ public class GobbleUI
 		messageField.setEditable (false);
 		p1.add (Box.createVerticalStrut (GAP));
 		p1.add (messageField);
-
+		p1.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e){
+				doMouseClicked(e);
+			}
+		});
 		frame.pack();
 		frame.setVisible (true);
 		}
@@ -78,11 +85,14 @@ public class GobbleUI
 		private static class GobbleUIRef{
 			public GobbleUI ui;
 		}
+
+
 		public static GobbleUI create(String name){
 			final GobbleUIRef ref =new GobbleUIRef();
 			onSwingThreadDo(new Runnable(){
 				public void run(){
 					ref.ui = new GobbleUI(name);
+
 				}
 			});
 			return ref.ui;
@@ -95,6 +105,20 @@ public class GobbleUI
 					
 			}
 		}
-	
+		public void markAdded(int x, int y,Color color){
+			spotButton[x][y].setColor(Color.white);
+		}
+		public void doMouseClicked(MouseEvent e){
+			
+				switch(e.getButton()){
+					case MouseEvent.BUTTON1:
+						spotButton[e.getY()/W][e.getX()/W].setColor(Color.white);
+					break;
+					default:
+					break;
+				}
+			
+		}
+		
 
 	}
