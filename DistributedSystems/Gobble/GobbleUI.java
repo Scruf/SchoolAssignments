@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
-/**
+/*
  * Class GobbleUI provides the view object for the network Gobble game.
  *
  * @author  Alan Kaminsky
@@ -112,7 +112,9 @@ public class GobbleUI implements ModelListener
 			
 				switch(e.getButton()){
 					case MouseEvent.BUTTON1:
-						spotButton[e.getY()/W][e.getX()/W].setColor(Color.white);
+						System.out.print(e.getY()/W);
+						System.out.print(e.getX()/W);
+						spotButton[e.getY()/W][e.getX()/H].setColor(Color.white);
 					break;
 					default:
 					break;
