@@ -37,7 +37,10 @@ public class GobbleUI implements ModelListener
 	 * Construct a new Gobble UI object.
 	 *
 	 * @param  name  Player's name.
-	 */
+	 */public static final int ROWS = 4;
+private GobbleBoardPanel  boardPanel;
+public static final int COLS = 4;
+
 	private GobbleUI
 		(String name)
 		{
@@ -46,6 +49,8 @@ public class GobbleUI implements ModelListener
 		p1.setLayout (new BoxLayout (p1, BoxLayout.Y_AXIS));
 		p1.setBorder (BorderFactory.createEmptyBorder (GAP, GAP, GAP, GAP));
 		frame.add (p1);
+		boardPanel = new GobbleBoardPanel(new GobbleBoard());
+		boardPanel.setAlignmentX(0.5f);
 
 		spotButton = new SpotButton [R] [C];
 		JPanel p2 = new JPanel();
@@ -73,11 +78,13 @@ public class GobbleUI implements ModelListener
 		messageField.setEditable (false);
 		p1.add (Box.createVerticalStrut (GAP));
 		p1.add (messageField);
-		p1.addMouseListener(new MouseAdapter(){
-			public void mouseClicked(MouseEvent e){
-				doMouseClicked(e);
-			}
-		});
+	 	boardPanel.addMouseListener (new MouseAdapter()
+         {
+         public void mouseClicked (MouseEvent e)
+            {
+            doMouseClick (e);
+            }
+         });
 		frame.pack();
 		frame.setVisible (true);
 		}
@@ -108,13 +115,12 @@ public class GobbleUI implements ModelListener
 		public void markAdded(int x, int y,Color color){
 			spotButton[x][y].setColor(Color.white);
 		}
-		public void doMouseClicked(MouseEvent e){
+		public void doMouseClick(MouseEvent e){
 			
 				switch(e.getButton()){
 					case MouseEvent.BUTTON1:
-						System.out.print(e.getY()/W);
-						System.out.print(e.getX()/W);
-						spotButton[e.getY()/W][e.getX()/H].setColor(Color.white);
+						boardPanel.clickToRow(e);
+						boardPanel.clickToColumn(e);
 					break;
 					default:
 					break;
