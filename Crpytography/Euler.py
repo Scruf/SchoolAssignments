@@ -15,4 +15,4 @@ def test_number():
 			print(i)
 
 # test_number()
-print(phi(55))
+print(phi(9))
