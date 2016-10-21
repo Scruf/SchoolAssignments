@@ -6,5 +6,10 @@ public class LargeExp{
 		BigInteger exponent = new BigInteger("179");
 		result = new BigInteger("3").modPow(exponent,mod);
 		System.out.print(result);
+		if(new BigInteger("618240007109027021").isProbablePrime(64)){
+			System.out.print("Its Prime number");
+		}else{
+			System.out.print("Its not a prime number");
+		}
 	}
 }
