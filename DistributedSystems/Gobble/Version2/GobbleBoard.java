@@ -14,7 +14,7 @@ public class GobbleBoard {
 	public synchronized void setSpot(int row, int col , Color color){
 		spot[row][col] = color;
 	}
-	public synchronized Color getSport(int row,int col, Color color){
+	public synchronized Color getSport(int row,int col){
 		return spot[row][col];
 	}
 }

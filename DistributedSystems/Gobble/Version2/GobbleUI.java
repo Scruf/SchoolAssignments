@@ -12,6 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+
 /*
  * Class GobbleUI provides the view object for the network Gobble game.
  *
@@ -38,11 +41,13 @@ public class GobbleUI implements ModelListener
 	 *
 	 * @param  name  Player's name.
 	 */public static final int ROWS = 4;
-
+	private GobbleBoard board;
+	private GobbleModel boardPanel;
+	private GobbleModel model;
 public static final int COLS = 4;
 
 	private GobbleUI
-		(String name)
+		(String name, GobbleBoard board)
 		{
 		frame = new JFrame ("Gobble -- " + name);
 		JPanel p1 = new JPanel();
@@ -50,6 +55,11 @@ public static final int COLS = 4;
 		p1.setBorder (BorderFactory.createEmptyBorder (GAP, GAP, GAP, GAP));
 		frame.add (p1);
 		
+		this.board = board;
+		boardPanel = new GobbleModel(board);
+		boardPanel.setAlignmentX(0.5f);
+	
+		p1.add(boardPanel);
 		spotButton = new SpotButton [R] [C];
 		JPanel p2 = new JPanel();
 		p2.setMaximumSize (PD);
@@ -61,7 +71,8 @@ public static final int COLS = 4;
 				{
 				SpotButton spot = spotButton[r][c] = new SpotButton();
 					spot.setEnabled (false);
-					spot.setColor(Color.yellow);
+
+					boardPanel.add(spot);
 					p2.add (spot);
 				}
 		p1.add (p2);
@@ -79,6 +90,11 @@ public static final int COLS = 4;
 	
 		frame.pack();
 		frame.setVisible (true);
+		boardPanel.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e){
+				doMouseClick(e);
+			}
+		});
 		}
 
 		private static class GobbleUIRef{
@@ -86,15 +102,27 @@ public static final int COLS = 4;
 		}
 
 
-		public static GobbleUI create(String name){
+		public static GobbleUI create(String name, GobbleBoard board){
 			final GobbleUIRef ref =new GobbleUIRef();
 			onSwingThreadDo(new Runnable(){
 				public void run(){
-					ref.ui = new GobbleUI(name);
+					ref.ui = new GobbleUI(name, board);
 
 				}
 			});
 			return ref.ui;
+		}
+		public void doMouseClick(MouseEvent e){
+			switch (e.getButton()){
+				case MouseEvent.BUTTON1:
+					boardPanel.clickToRow(e);
+					boardPanel.clickToColum(e);
+
+
+				break;
+				default:
+				break;
+			}
 		}
 		private static void onSwingThreadDo(Runnable task){
 			try{
@@ -105,7 +133,7 @@ public static final int COLS = 4;
 			}
 		}
 		public void markAdded(int x,int y,Color color){
-			
+			boardPanel.repaint();
 		}
 		
 

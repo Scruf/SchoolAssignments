@@ -16,6 +16,7 @@ public class GobbleCloneModel implements ModelListener{
 		this.listener = model;
 	}
 	public void markAdded(int row,int col, Color color) throws IOException{
+		System.out.print("What is going on");
 		board.setSpot(row,col,color);
 		listener.markAdded(row,col,color);
 	}

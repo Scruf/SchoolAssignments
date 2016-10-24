@@ -23,7 +23,8 @@ public class Gobble {
 		try{
 			Socket  socket = new Socket();
 			socket.connect(new InetSocketAddress(args[0], port));
-			GobbleUI gobble = GobbleUI.create(args[2]);
+			GobbleCloneModel model = new GobbleCloneModel();
+			GobbleUI gobble = GobbleUI.create(args[2],model.getBoard());
 		}catch(IOException ie){
 			ie.printStackTrace();
 			System.exit(0);

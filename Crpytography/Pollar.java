@@ -38,7 +38,7 @@ public class Pollar extends Task{
 	public void main (String []args) throws Exception{
 		BigInteger n = new BigInteger("618240007109027021");
 		NonPollar test  = new NonPollar(n);
-		// test.compute();
+		test.compute();
 		//2a)Answer 2147483647
 		BigInteger n1 = new BigInteger(Integer.toString(test.min_number.item)).subtract(new BigInteger("1"));
 		NonPollar test2 = new NonPollar(n1);
