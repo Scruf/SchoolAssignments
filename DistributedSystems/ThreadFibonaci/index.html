@@ -1,0 +1,714 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>CSCI 251&mdash;Concepts of Parallel and Distributed Systems</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% BGCOLOR="#CCCCCC">
+<TR>
+<TD ALIGN="left" VALIGN="top">
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR="#CCCCCC">
+<TR>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-1">
+<B>Alan Kaminsky</B>
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+&bull;
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+Department of Computer Science
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+&bull;
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+Rochester Institute of Technology
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+&bull;
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+<A HREF="http://icasualties.org/Iraq/">4505</A> +
+<A HREF="http://icasualties.org/oef/">2384</A> =
+6889
+</FONT>
+</TD>
+</TR>
+</TABLE>
+<TD ALIGN="right" VALIGN="top">
+<FONT SIZE="-1">
+<A HREF="/~ark/" TARGET="_top">Home Page</A>
+</FONT>
+</TD>
+</TR>
+</TABLE>
+
+<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% BGCOLOR="#CCCCCC">
+<TR>
+<TD ALIGN="left" VALIGN="center">
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR="#CCCCCC">
+<TR>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-1">
+<B>Concepts of Parallel and Distributed Systems</B>
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+&bull;
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+CSCI 251-01, -02, -03
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+&bull;
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+Fall Semester 2016
+</FONT>
+</TD>
+</TR>
+</TABLE>
+<TD ALIGN="right" VALIGN="baseline">
+<FONT SIZE="-1">
+<A HREF="/~ark/251/" TARGET="_top">Course Page</A>
+</FONT>
+</TD>
+</TR>
+</TABLE>
+
+
+<H2>CSCI 251&mdash;Concepts of Parallel and Distributed Systems
+<BR>Programming Project 1</H2>
+
+<B>Prof. Alan Kaminsky&mdash;Fall Semester 2016</B>
+<BR>Rochester Institute of Technology&mdash;Department of Computer Science
+
+<P>
+<A HREF="#overview">Overview</A>
+<BR><A HREF="#system">Generalized Fibonacci Number</A>
+<BR><A HREF="#softwarereqts">Software Requirements</A>
+<!--&mdash; <A HREF="#clarifications">Clarifications</A>-->
+<BR><A HREF="#softwaredesign">Software Design Criteria</A>
+<!--&mdash; <A HREF="#designclarifications">Clarifications</A>-->
+<BR><A HREF="#submissionreqts">Submission Requirements</A>
+<BR><A HREF="#grading">Grading Criteria</A>
+<!--&mdash; <A HREF="#testcases">Test Cases</A>-->
+<!--&mdash; <A HREF="#sizes">Program Sizes</A>-->
+<BR><A HREF="#late">Late Projects</A>
+<BR><A HREF="#plagiarism">Plagiarism</A>
+<BR><A HREF="#resubmission">Resubmission</A>
+
+<P>
+<HR>
+<A NAME="overview"><H3>Overview</H3></A>
+
+<P>
+Write a Java program that uses multiple threads
+to learn about thread creation, execution, synchronization, and termination.
+
+<P>
+<B>Help with your project:</B>
+I am willing to help you with the design of your project.
+I am willing to help you debug your project if the code isn't working.
+However, for help with design or debugging issues
+<I>you must come see me in person.</I>
+Either visit me during office hours
+or make an appointment.
+I will not help you with design or debugging issues via email.
+If it's the evening of the project deadline
+and I have gone home,
+you are on your own.
+Plan and work ahead
+so there will be plenty of time
+for me to help you if necessary.
+
+<P>
+<HR>
+<A NAME="system"><H3>Generalized Fibonacci Number</H3></A>
+
+<P>
+The generalized Fibonacci number <I>f</I><SUB><I>a,b</I></SUB>(<I>n</I>),
+<I>n</I> &ge; 0,
+with parameters <I>a</I> and <I>b</I>,
+is defined recursively as
+
+<P>
+<BLOCKQUOTE>
+<I>f</I><SUB><I>a,b</I></SUB>(0) = <I>a</I>
+<BR><I>f</I><SUB><I>a,b</I></SUB>(1) = <I>b</I>
+<BR><I>f</I><SUB><I>a,b</I></SUB>(<I>n</I>) =
+<I>f</I><SUB><I>a,b</I></SUB>(<I>n</I>&minus;1) +
+<I>f</I><SUB><I>a,b</I></SUB>(<I>n</I>&minus;2)
+</BLOCKQUOTE>
+
+<P>
+One way to compute <I>f</I><SUB><I>a,b</I></SUB>(<I>n</I>)
+uses an array <B>F</B>
+that stores all the intermediate values
+from <I>f</I><SUB><I>a,b</I></SUB>(0)
+to <I>f</I><SUB><I>a,b</I></SUB>(<I>n</I>).
+Here is an example
+showing how <I>f</I><SUB>5,7</SUB>(9)
+is computed:
+
+<P><CENTER><IMG SRC="fig01.png"></CENTER>
+
+<P>
+You will write a multithreaded Java program
+to compute the generalized Fibonacci number
+specified by the parameters <I>a</I> and <I>b</I>
+and the argument <I>n</I>,
+using the array-based approach described above.
+The program gets the parameters from the command line.
+The program prints <I>f</I><SUB><I>a,b</I></SUB>(<I>n</I>).
+Here is an example computing <I>f</I><SUB>5,7</SUB>(100):
+<PRE>
+$ java Fib 5 7 100
+3574188916427609250655
+</PRE>
+
+<P>
+Because the Fibonacci number is an exponential function of <I>n</I>,
+you cannot use type <TT>int</TT> or type <TT>long</TT>
+to do the calculations.
+If you do, the calculations will overflow,
+and the program will get the wrong answer.
+Instead, you must use class java.math.BigInteger.
+The argument <I>n</I>, however, will be type <TT>int</TT>.
+
+<P>
+<HR>
+<A NAME="softwarereqts"><H3>Software Requirements</H3></A>
+
+<OL TYPE=1>
+
+<P><LI>
+The program must be run by typing this command line:
+<PRE>
+    java Fib &lt;a&gt; &lt;b&gt; &lt;n&gt;
+</PRE>
+<OL TYPE=a>
+<LI>
+The first argument is the parameter <I>a</I>;
+it must be a big integer (class java.math.BigInteger).
+<LI>
+The second argument is the parameter <I>b</I>;
+it must be a big integer (class java.math.BigInteger).
+<LI>
+The third argument is the argument <I>n</I>;
+it must be an integer &ge; 0 (type <TT>int</TT>).
+</OL>
+<BR><I>Note:</I>
+This means that the program's class
+must be named <TT>Fib</TT>,
+and this class must not be in a package.
+
+<P><LI>
+If the command line does not have the required number of arguments,
+or if any argument is erroneous,
+the program must print a usage message on the console
+and must exit.
+The usage message must describe the problem.
+The wording of the usage message is up to you.
+
+<P><LI>
+The program must print one line on the console.
+<OL TYPE=a>
+<LI>
+The line's contents must be the number
+<I>f</I><SUB><I>a,b</I></SUB>(<I>n</I>).
+<LI>
+There must be no space characters
+before the number or after the number.
+<LI>
+The output must be terminated by a newline.
+</OL>
+
+<P><LI>
+If the program encounters any error condition,
+the program must print an error message on the console
+and must exit.
+The error message must describe the problem.
+The wording of the error message is up to you.
+
+<P>
+<I>Note:
+If your program's output does not conform <B>exactly</B>
+to Software Requirements 1 through 4,
+<B>you will lose credit</B> on your project.</I>
+See the <A HREF="#grading">Grading Criteria</A> below.
+
+</OL>
+
+<!--
+
+<P>
+<A NAME="clarifications"><H4>Clarifications</H4></A>
+
+<P>
+<I>Q:</I>
+What should the program do if it tries to create too many threads?
+<BR>
+<I>A:</I>
+The JVM will throw an exception if this happens.
+That is an error condition; see Requirement 4.
+(I do not plan to have test cases
+that make the program create too many threads, though.)
+
+-->
+
+<P>
+<HR>
+<A NAME="softwaredesign"><H3>Software Design Criteria</H3></A>
+
+<OL TYPE=1>
+
+<P><LI>
+The program must consist of the following classes,
+and no other classes.
+<OL TYPE=a>
+<P><LI>
+A monitor class containing the <B>F</B> array.
+The monitor class must have the following public methods,
+and no other public methods.
+<UL>
+<P><LI>
+Constructor <TT>(int n)</TT>.
+This constructor initializes the monitor
+to calculate the generalized Fibonacci number
+for argument <I>n</I>.
+<P><LI>
+<TT>void putValue (int i, BigInteger value)</TT>.
+This method puts the given <TT>value</TT>
+into array element <TT>i</TT>.
+It is an error
+if a value
+has already been put into array element <TT>i</TT>.
+<P><LI>
+<TT>BigInteger getValue (int i)</TT>.
+This method returns the value stored
+in array element <TT>i</TT>.
+This method does not return
+until array element <TT>i</TT>
+has been put.
+</UL>
+<P><LI>
+A thread that prints the output.
+<P><LI>
+A thread that computes <I>one and only one</I> array element
+and stores it in the monitor.
+There is a separate instance of this thread
+<I>for each array element,</I>
+including array elements 0 and 1.
+<P><LI>
+A main program.
+The main program must create the above objects.
+The main program must start the threads <I>in this order:</I>
+first the output printing thread,
+then the thread that computes the last array element,
+then the thread that computes
+the next-to-last array element,
+and so on backwards through the array elements.
+The main program must <I>not</I> wait for the threads to terminate.
+The main program <I>must not do anything else.</I>
+</OL>
+
+<P><LI>
+The program must
+follow the thread programming patterns studied in class.
+
+<P><LI>
+The program must
+be designed using object oriented design principles as appropriate.
+
+<P><LI>
+The program must
+make use of reusable software components as appropriate.
+
+<P><LI>
+Each class or interface
+must include a Javadoc comment
+describing the overall class or interface.
+
+<P><LI>
+Each method within each class or interface
+must include a Javadoc comment
+describing the overall method,
+the arguments if any,
+the return value if any,
+and the exceptions thrown if any.
+<P>
+<I>Note:</I>
+See my Java source files which we studied in class
+for the style of Javadoc comments I'm looking for.
+
+<P>
+<I>Note:
+If your program's design does not conform
+to Software Design Criteria 1 through 6,
+<B>you will lose credit</B> on your project.</I>
+See the <A HREF="#grading">Grading Criteria</A> below.
+
+</OL>
+
+<!--
+
+<P>
+<A NAME="designclarifications"><H4>Clarifications</H4></A>
+
+<P>
+<I>Q:</I>
+Can the monitor class have hidden (private) methods?
+<BR>
+<I>A:</I>
+Yes, the monitor class can have private methods.
+Software Design Criterion 1a has been changed
+to refer to public methods.
+
+-->
+
+<P>
+<HR>
+<A NAME="submissionreqts"><H3>Submission Requirements</H3></A>
+
+<P>
+Your project submission will consist of a ZIP file
+containing the Java source file for every class and interface
+in your project.
+Put all the source files into a ZIP file
+named <TT>"&lt;username&gt;.zip"</TT>,
+replacing <TT>&lt;username&gt;</TT> with the user name
+from your Computer Science Department account.
+On a Linux system, the command for creating a ZIP file is:
+
+<P>
+<TT>zip &lt;username&gt;.zip *.java</TT>
+
+<P>
+Send your ZIP file to me by email at
+ark<FONT SIZE="1" COLOR="#FFFFFF">&shy;</FONT>&#64;<FONT SIZE="1" COLOR="#FFFFFF">&shy;</FONT>cs.rit.edu.
+Include your full name and your computer account name
+in the email message,
+and include the ZIP file as an attachment.
+
+<P>
+When I get your email message,
+I will extract the contents of your ZIP file
+into a directory.
+I will set my Java class path
+to include the directory where I extracted your files,
+as well as the Parallel Java 2 Library.
+I will compile all the Java source files in your program
+using the JDK 1.8 compiler.
+I will then send you a reply message
+acknowledging I received your project
+and stating whether I was able to compile all the source files.
+If you have not received a reply
+within one day,
+please contact me.
+Your project is not successfully submitted
+until I have sent you an acknowledgment
+stating I was able to compile all the source files.
+
+<P>
+The submission deadline is Wednesday, September 14, 2016 at 11:59pm.
+The date/time at which your email message arrives in my inbox
+will determine whether your project meets the deadline.
+
+<P>
+You may submit your project multiple times up until the deadline.
+I will keep and grade only the most recent successful submission.
+There is no penalty for multiple submissions.
+
+<P>
+If you submit your project before the deadline,
+but I do not accept it
+(e.g. I can't compile all the source files),
+and you cannot or do not submit your project again before the deadline,
+the project will be late (see below).
+<B><I>I strongly advise you to submit the project
+several days BEFORE the deadline,
+so there will be time to deal with any problems
+that may arise in the submission process.</I></B>
+
+<P>
+<HR>
+<A NAME="grading"><H3>Grading Criteria</H3></A>
+
+<P>
+I will grade your project by:
+<UL>
+<P><LI>
+(10 points) Evaluating the design of your program,
+as documented in the Javadoc
+and as implemented in the source code.
+<UL>
+<LI>
+All of the <A HREF="#softwaredesign">Software Design Criteria</A>
+are fully met: 10 points.
+<LI>
+Some of the <A HREF="#softwaredesign">Software Design Criteria</A>
+are not fully met: 0 points.
+</UL>
+<P><LI>
+(20 points) Running your project.
+There will be twenty test cases, each worth 1 point.
+For each test case,
+if the program runs using the command line in Requirement 1
+and the program produces the correct output,
+the test case will get 1 point,
+otherwise the test case will get 0 points.
+"Correct output" means
+"output fulfills <I>all</I> the
+<A HREF="#softwarereqts">Software Requirements</A>
+<I>exactly.</I>"
+<P><LI>
+(30 points) Total.
+</UL>
+
+<P>
+When I run your program,
+the Java class path will point to the directory
+with your compiled class files,
+as well as the Parallel Java 2 Library.
+I will use JDK 1.8 to run your program.
+
+<P>
+I will grade the test cases
+based <I>solely</I> on whether your program produces the correct output
+as specified in the above <A HREF="#softwarereqts">Software Requirements</A>.
+<I>Any</I> deviation from the requirements
+will result in a grade of 0 for the test case.
+This includes errors in the formatting (such as extra spaces),
+incorrect uppercase/lowercase,
+output lines not terminated with a newline,
+extra newline(s) in the output,
+and extraneous output not called for in the requirements.
+The requirements state <I>exactly</I> what the output is supposed to be,
+and there is no excuse for outputting anything different.
+If any requirement is unclear, please ask for clarification.
+
+<P>
+If there is a defect in your program
+and that same defect causes multiple test cases to fail,
+I will deduct points for <I>every</I> failing test case.
+The number of points deducted does <I>not</I> depend
+on the size of the defect;
+I will deduct the same number of points
+whether the defect is 1 line, 10 lines, 100 lines, or whatever.
+
+<P>
+After grading your project
+I will put your grade and any comments I have
+in your encrypted grade file.
+For further information,
+see the <A HREF="../policies.shtml">Course Grading and Policies</A>
+and the <A HREF="../encryptedgrades.shtml">Encrypted Grades</A>.
+
+<P>
+<HR>
+<A NAME="late"><H3>Late Projects</H3></A>
+
+<P>
+If I have not received a successful submission of your project
+by the deadline,
+your project will be late
+and will receive a grade of zero.
+You may request an extension
+for the project.
+There is no penalty for an extension.
+See the Course Policies for my
+<A HREF="../policies.shtml#extensions">policy on extensions</A>.
+
+<P>
+<HR>
+<A NAME="plagiarism"><H3>Plagiarism</H3></A>
+
+<P>
+Programming Project 1 must be entirely your own individual work.
+I will not tolerate plagiarism.
+If in my judgment
+the project is not entirely your own work,
+you will automatically receive, as a minimum,
+a grade of zero for the assignment.
+See the Course Policies for my
+<A HREF="../policies.shtml#plagiarism">policy on plagiarism</A>.
+
+<P>
+<HR>
+<A NAME="resubmission"><H3>Resubmission</H3></A>
+
+<P>
+If you so choose,
+you may submit a revised version of your project
+after you have received the grade for the original version.
+However, if the original project was not successfully submitted
+by the (possibly extended) deadline
+or was not entirely your own work (i.e., plagiarized),
+you are not allowed to submit a revised version.
+Submit the revised version via email
+in the same way as the original version.
+<!--
+I will accept a resubmission
+up until 11:59pm Friday 26-Feb-2016.
+-->
+I will accept a resubmission
+up until three days after
+the grades for the original version are released.
+The resubmission deadline will be announced
+on the <A HREF="../whatsnew.shtml">What's New</A> page
+and in the <A HREF="../schedule.shtml">Course Schedule</A>.
+You may resubmit your project multiple times up until the deadline;
+I will keep and grade only the most recent successful resubmission;
+there is no penalty for multiple resubmissions.
+I will grade the revised version
+using the same criteria as the original version,
+then I will subtract 3 points
+(10% of the maximum possible points)
+as a resubmission penalty.
+The revised grade will replace the original grade,
+even if the revised grade is less than the original grade.
+
+<P>
+<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% BGCOLOR="#CCCCCC">
+<TR>
+<TD ALIGN="left" VALIGN="center">
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR="#CCCCCC">
+<TR>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-1">
+<B>Concepts of Parallel and Distributed Systems</B>
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+&bull;
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+CSCI 251-01, -02, -03
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+&bull;
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+Fall Semester 2016
+</FONT>
+</TD>
+</TR>
+</TABLE>
+<TD ALIGN="right" VALIGN="baseline">
+<FONT SIZE="-1">
+<A HREF="/~ark/251/" TARGET="_top">Course Page</A>
+</FONT>
+</TD>
+</TR>
+</TABLE>
+
+<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% BGCOLOR="#CCCCCC">
+<TR>
+<TD ALIGN="left" VALIGN="top">
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR="#CCCCCC">
+<TR>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-1">
+<B>Alan Kaminsky</B>
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+&bull;
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+Department of Computer Science
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+&bull;
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+Rochester Institute of Technology
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+&bull;
+</FONT>
+</TD>
+<TD WIDTH=10> </TD>
+<TD ALIGN="left" VALIGN="baseline">
+<FONT SIZE="-2">
+<A HREF="http://icasualties.org/Iraq/">4505</A> +
+<A HREF="http://icasualties.org/oef/">2384</A> =
+6889
+</FONT>
+</TD>
+</TR>
+</TABLE>
+<TD ALIGN="right" VALIGN="top">
+<FONT SIZE="-1">
+<A HREF="/~ark/" TARGET="_top">Home Page</A>
+</FONT>
+</TD>
+</TR>
+</TABLE>
+
+<FONT SIZE="-2">
+Copyright &copy; 2016 Alan Kaminsky.
+All rights reserved.
+Last updated 24-Aug-2016.
+Please send comments to ark<FONT SIZE="1" COLOR="#FFFFFF">&shy;</FONT>&#64;<FONT SIZE="1" COLOR="#FFFFFF">&shy;</FONT>cs.rit.edu.
+</FONT>
+
+</BODY>
+</HTML>
