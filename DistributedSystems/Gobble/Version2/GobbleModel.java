@@ -20,16 +20,17 @@ public class GobbleModel extends JPanel {
 	public static final int R = 4;
 	public static final int C = 4;
 	private GobbleBoard  board; 
-	private SpotButton spotButton [][];
+	private SpotButton[][] spotButton;
 	public  GobbleModel(GobbleBoard board){
 		super();
 		this.board = board;
-		Dimension dim = new Dimension(W*GobbleBoard.Cols, W*GobbleBoard.Rows);
+
+		Dimension dim = new Dimension (C*W, R*H);
 		setMinimumSize(dim);
 		setPreferredSize(dim);
 		setMaximumSize(dim);
 		spotButton = new SpotButton[R][C];
-
+		
 	
 	}
 	public int clickToRow(MouseEvent e){
@@ -46,18 +47,19 @@ public class GobbleModel extends JPanel {
 		super.paintComponent(g);
 		Graphics2D  g2d =(Graphics2D) g.create();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		Ellipse2D.Double ellipse = new Ellipse2D.Double();
-		ellipse.width = 64;
-		ellipse.height = 64;
+		// Ellipse2D.Double ellipse = new Ellipse2D.Double();
+		// ellipse.width = 64;
+		// ellipse.height = 64;
+		
 	
 
-		synchronized(board){
-			for (int i=0; i<R; i++){
-				for(int j=0; j<C; j++){
+		// synchronized(board){
+		// 	for (int i=0; i<R; i++){
+		// 		for(int j=0; j<C; j++){
 					
-				}
-			}
-		}
+		// 		}
+		// 	}
+		// }
 		
 	}
 

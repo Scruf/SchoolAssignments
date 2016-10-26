@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
@@ -43,7 +44,7 @@ public class GobbleUI implements ModelListener
 	 */public static final int ROWS = 4;
 	private GobbleBoard board;
 	private GobbleModel boardPanel;
-	private GobbleModel model;
+
 public static final int COLS = 4;
 
 	private GobbleUI
@@ -54,12 +55,12 @@ public static final int COLS = 4;
 		p1.setLayout (new BoxLayout (p1, BoxLayout.Y_AXIS));
 		p1.setBorder (BorderFactory.createEmptyBorder (GAP, GAP, GAP, GAP));
 		frame.add (p1);
-		
-		this.board = board;
 		boardPanel = new GobbleModel(board);
-		boardPanel.setAlignmentX(0.5f);
-	
-		p1.add(boardPanel);
+		boardPanel.setAlignmentX (0.5f);
+		boardPanel.setBorder
+			(BorderFactory.createBevelBorder (BevelBorder.RAISED));
+		p1.add (boardPanel);
+		p1.add (Box.createVerticalStrut (10));
 		spotButton = new SpotButton [R] [C];
 		JPanel p2 = new JPanel();
 		p2.setMaximumSize (PD);
@@ -70,10 +71,8 @@ public static final int COLS = 4;
 			for (int c = 0; c < C; ++ c)
 				{
 				SpotButton spot = spotButton[r][c] = new SpotButton();
-					spot.setEnabled (false);
-
-					boardPanel.add(spot);
-					p2.add (spot);
+				spot.setEnabled (false);
+				p2.add (spot);
 				}
 		p1.add (p2);
 
@@ -87,7 +86,7 @@ public static final int COLS = 4;
 		messageField.setEditable (false);
 		p1.add (Box.createVerticalStrut (GAP));
 		p1.add (messageField);
-	
+
 		frame.pack();
 		frame.setVisible (true);
 		boardPanel.addMouseListener(new MouseAdapter(){
@@ -102,7 +101,7 @@ public static final int COLS = 4;
 		}
 
 
-		public static GobbleUI create(String name, GobbleBoard board){
+		public static GobbleUI create(final String name, final GobbleBoard board){
 			final GobbleUIRef ref =new GobbleUIRef();
 			onSwingThreadDo(new Runnable(){
 				public void run(){

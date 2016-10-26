@@ -130,49 +130,49 @@ public class GoBoardPanel
 			 RenderingHints.VALUE_ANTIALIAS_ON);
 
 		// Draw lines.
-		g2d.setStroke (new BasicStroke (1.0f));
-		g2d.setColor (Color.BLACK);
-		Line2D.Double line = new Line2D.Double();
-		for (int r = 0; r < GoBoard.ROWS; ++ r)
-			{
-			line.x1 = X1;
-			line.y1 = Y1 + r*W;
-			line.x2 = X2;
-			line.y2 = line.y1;
-			g2d.draw (line);
-			}
-		for (int c = 0; c < GoBoard.COLS; ++ c)
-			{
-			line.x1 = X1 + c*W;
-			line.y1 = Y1;
-			line.x2 = line.x1;
-			line.y2 = Y2;
-			g2d.draw (line);
-			}
-
-		// // Draw spots.
-		// Ellipse2D.Double ellipse = new Ellipse2D.Double();
-		// ellipse.width = D;
-		// ellipse.height = D;
-		// synchronized (board)
+		// g2d.setStroke (new BasicStroke (1.0f));
+		// g2d.setColor (Color.BLACK);
+		// Line2D.Double line = new Line2D.Double();
+		// for (int r = 0; r < GoBoard.ROWS; ++ r)
 		// 	{
-		// 	for (int r = 0; r < GoBoard.ROWS; ++ r)
-		// 		{
-		// 		for (int c = 0; c < GoBoard.COLS; ++ c)
-		// 			{
-		// 			Color color = board.getSpot (r, c);
-		// 			if (color != null)
-		// 				{
-		// 				ellipse.x = c*W + OFFSET;
-		// 				ellipse.y = r*W + OFFSET;
-		// 				g2d.setColor (color);
-		// 				g2d.fill (ellipse);
-		// 				g2d.setColor (Color.BLACK);
-		// 				g2d.draw (ellipse);
-		// 				}
-		// 			}
-		// 		}
+		// 	line.x1 = X1;
+		// 	line.y1 = Y1 + r*W;
+		// 	line.x2 = X2;
+		// 	line.y2 = line.y1;
+		// 	g2d.draw (line);
 		// 	}
+		// for (int c = 0; c < GoBoard.COLS; ++ c)
+		// 	{
+		// 	line.x1 = X1 + c*W;
+		// 	line.y1 = Y1;
+		// 	line.x2 = line.x1;
+		// 	line.y2 = Y2;
+		// 	g2d.draw (line);
+		// 	}
+
+		// Draw spots.
+		Ellipse2D.Double ellipse = new Ellipse2D.Double();
+		ellipse.width = D;
+		ellipse.height = D;
+		synchronized (board)
+			{
+			for (int r = 0; r < GoBoard.ROWS; ++ r)
+				{
+				for (int c = 0; c < GoBoard.COLS; ++ c)
+					{
+					Color color = board.getSpot (r, c);
+					if (color != null)
+						{
+						ellipse.x = c*W + OFFSET;
+						ellipse.y = r*W + OFFSET;
+						g2d.setColor (color);
+						g2d.fill (ellipse);
+						g2d.setColor (Color.BLACK);
+						g2d.draw (ellipse);
+						}
+					}
+				}
+			}
 		}
 
 // Unit test main program.
