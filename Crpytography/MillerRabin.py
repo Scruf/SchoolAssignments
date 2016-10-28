@@ -36,6 +36,12 @@ def miller_rabin(n):
 	a = randint(1,n-1)
 	#b
 	b = square_multiply(a,m,n)
+	for i in range (k-1):
+		if (1-b)%n==0:
+			return n
+		else:
+			b = b**2%n
+	return n
 
-miller_rabin(56)
+
 

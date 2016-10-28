@@ -31,4 +31,4 @@ def pollard(n,x):
 # while  pollard(618240007109027021,100) !='failure':
 # 	B = B + 1
 print(pollard(618240007109027021,24))
-#23
+#result 250387201

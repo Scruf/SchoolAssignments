@@ -72,7 +72,9 @@ public static final int COLS = 4;
 				{
 				SpotButton spot = spotButton[r][c] = new SpotButton();
 				spot.setEnabled (false);
-				p2.add (spot);
+				spot.setColor(Color.yellow);
+				boardPanel.add(spot);
+				// p2.add (spot);
 				}
 		p1.add (p2);
 

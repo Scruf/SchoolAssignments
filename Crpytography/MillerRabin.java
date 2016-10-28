@@ -14,6 +14,6 @@ public class MillerRabin{
 			if (!new BigInteger(Integer.toString(i)).isProbablePrime(64))
 				non_primes.add(i);
 		}
-		System.out.print(non_primes);
+		
 	}
 }
