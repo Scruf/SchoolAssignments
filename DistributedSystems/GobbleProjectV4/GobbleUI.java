@@ -3,7 +3,11 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.NoSuchElementException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -77,6 +81,8 @@ public class GobbleUI implements ModelListener
 	
 	/** The Constant PD. */
 	private static final Dimension PD = new Dimension (C*W, R*H);
+	
+	
 
 	/**
 	 * Construct a new Gobble UI object.
@@ -107,6 +113,7 @@ public class GobbleUI implements ModelListener
 				final int rr = r;
 				final int cc = c;
 				SpotButton spot = spotButton[r][c] = new SpotButton();
+				spot.setMinimumSize(new Dimension(rr, cc));
 				spot.setEnabled (false);
 				spot.addActionListener(new ActionListener() {
 
@@ -116,11 +123,10 @@ public class GobbleUI implements ModelListener
 						try {
 
 							viewListener.addMarker(rr, cc, player);
-							spotButton[currentSpotButton.getRow()][currentSpotButton.getColumn()].setColor(frame.getBackground());
-							viewListener.addColor(currentSpotButton.getRow(), currentSpotButton.getColumn(), frame.getBackground());
+							spotButton[getRow(currentSpotButton)][getColumn(currentSpotButton)].setColor(frame.getBackground());
+							viewListener.addColor(getRow(currentSpotButton), getColumn(currentSpotButton), frame.getBackground());
 
-							currentSpotButton.setRow(rr);
-							currentSpotButton.setColumn(cc);
+							currentSpotButton.setMinimumSize(new Dimension(rr, cc));
 							checkWinner();
 						} catch (IOException e1) {
 							e1.printStackTrace();
@@ -150,6 +156,17 @@ public class GobbleUI implements ModelListener
 		messageField.setEditable (false);
 		p1.add (Box.createVerticalStrut (GAP));
 		p1.add (messageField);
+		
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent we) {
+				try {
+					viewListener.close();
+				} catch (IOException e) {
+					
+				}
+			}
+		});
 
 		frame.pack();
 		frame.setVisible (true);
@@ -170,17 +187,18 @@ public class GobbleUI implements ModelListener
 	 */
 	@Override
 	public void markerAdded(int r, int c, int player) throws IOException {
-		// TODO Auto-generated method stub
-		//
+
 		for (int a = 0; a < R; a ++) {
 			for (int b = 0; b < C; b ++) {
 				spotButton[a][b].setEnabled(false);
 
-				if (spotButton[a][b].getColor() != Color.BLUE && 
-						spotButton[a][b].getColor() != Color.RED && 
-						spotButton[a][b].getColor() != frame.getBackground()) {
+				Color color = getSpotButtonColor(spotButton[a][b]);
+				if (color != Color.BLUE && 
+						color != Color.RED && 
+								color != frame.getBackground()) {
 					spotButton[a][b].setColor(Color.YELLOW);
 				}
+				
 				spotButton[a][b].repaint();
 
 			}
@@ -197,10 +215,13 @@ public class GobbleUI implements ModelListener
 		if (waiting) {
 			for (int i = 0; i < 4; i ++) {
 				try {
-					SpotButton sb = spotButton[currentSpotButton.getRow() + 
-					                           ROWS[i]][currentSpotButton.getColumn() + 
+					SpotButton sb = spotButton[getRow(currentSpotButton) + 
+					                           ROWS[i]][getColumn(currentSpotButton) + 
 					                                    COLS[i]];
-					if (sb.getColor() == Color.YELLOW) {
+					Field f = sb.getClass().getDeclaredField("color");
+					f.setAccessible(true);
+					Color color = (Color) f.get(sb);
+					if (color == Color.YELLOW) {
 						sb.setEnabled(true);
 					}
 
@@ -211,6 +232,25 @@ public class GobbleUI implements ModelListener
 		}
 
 		checkWinner();
+		
+	}
+	
+	private Color getSpotButtonColor(SpotButton sb) {
+		try {
+		Field f = sb.getClass().getDeclaredField("color");
+		f.setAccessible(true);
+		return (Color) f.get(sb);
+		} catch (NoSuchFieldException | SecurityException | IllegalAccessException exc) {}
+		return null;
+	}
+	
+	private int getRow(SpotButton sb) {
+		
+		return sb.getMinimumSize().width;
+	}
+	
+	private int getColumn(SpotButton sb) {
+		return sb.getMinimumSize().height;
 	}
 
 	/**
@@ -230,13 +270,16 @@ public class GobbleUI implements ModelListener
 		SpotButton player2 = new SpotButton();
 		for (int a = 0; a < R; a ++) {
 			for (int b = 0; b < C; b ++) {
-				if (spotButton[a][b].getColor() == Color.RED) {
-					player1.setRow(a);
-					player1.setColumn(b);
+				Color color = getSpotButtonColor(spotButton[a][b]);
+				if (color == Color.RED) {
+
+					player1.setMinimumSize(new Dimension(a, b));
+
 				}
-				if (spotButton[a][b].getColor() == Color.BLUE) {
-					player2.setRow(a);
-					player2.setColumn(b);
+				if (color == Color.BLUE) {
+
+					player2.setMinimumSize(new Dimension(a, b));
+
 				}
 			}
 		}		
@@ -247,10 +290,10 @@ public class GobbleUI implements ModelListener
 			// define whether there is at least one enabled spot button.
 			
 			try {
-				SpotButton sbp1 = spotButton[player1.getRow() + 
-				                             ROWS[i]][player1.getColumn() + COLS[i]];
+				SpotButton sbp1 = spotButton[getRow(player1) + 
+				                             ROWS[i]][getColumn(player1) + COLS[i]];
 
-				if (sbp1.getColor() == Color.YELLOW) {
+				if (getSpotButtonColor(sbp1) == Color.YELLOW) {
 					isFoodForPlayer1 = true;
 					break;
 				}
@@ -264,9 +307,9 @@ public class GobbleUI implements ModelListener
 			// define whether there is at least one enabled spot button.
 			
 			try {
-				SpotButton sbp2 = spotButton[player2.getRow() + 
-				                             ROWS[i]][player2.getColumn() + COLS[i]];
-				if (sbp2.getColor() == Color.YELLOW) {
+				SpotButton sbp2 = spotButton[getRow(player2) + 
+				                             ROWS[i]][getColumn(player2) + COLS[i]];
+				if (getSpotButtonColor(sbp2) == Color.YELLOW) {
 					isFoodForPlayer2 = true;
 					break;
 				}
@@ -323,13 +366,13 @@ public class GobbleUI implements ModelListener
 			spotButton[1][3].setEnabled(true);
 			currentSpotButton = spotButton[0][3];
 			currentSpotButton.setColor(Color.RED);
-			currentSpotButton.setRow(0);
-			currentSpotButton.setColumn(3);
+
+			currentSpotButton.setMinimumSize(new Dimension(0, 3));
 		} else {
 			currentSpotButton = spotButton[3][0];
 			currentSpotButton.setColor(Color.BLUE);
-			currentSpotButton.setRow(3);
-			currentSpotButton.setColumn(0);
+
+			currentSpotButton.setMinimumSize(new Dimension(3, 0));
 		}
 
 	}
@@ -344,13 +387,13 @@ public class GobbleUI implements ModelListener
 		if (player == 1) {
 			currentSpotButton = spotButton[0][3];
 			currentSpotButton.setColor(Color.RED);
-			currentSpotButton.setRow(0);
-			currentSpotButton.setColumn(3);
+
+			currentSpotButton.setMinimumSize(new Dimension(0, 3));
 		} else {
 			currentSpotButton = spotButton[3][0];
 			currentSpotButton.setColor(Color.BLUE);
-			currentSpotButton.setRow(3);
-			currentSpotButton.setColumn(0);
+
+			currentSpotButton.setMinimumSize(new Dimension(3, 0));
 		}
 	}
 

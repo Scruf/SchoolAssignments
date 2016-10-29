@@ -70,7 +70,7 @@ public class GobbleModelClone implements ModelListener {
 	/* (non-Javadoc)
 	 * @see ModelListener#close()
 	 */
-	public void close() {
+	public void close() throws IOException {
 		modelListener.close();
 	}
 

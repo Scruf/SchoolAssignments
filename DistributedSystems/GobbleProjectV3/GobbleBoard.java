@@ -8,11 +8,7 @@ public class GobbleBoard implements GobbleBoardBehavior {
 	 * -1 (empty)
 	 */
 	public GobbleBoard() {
-//		for (int r = 0; r < ROWS; r++) {
-//			for (int c = 0; c < COLS; c++) {
-//				board[r][c] = -1;
-//			}
-//		}
+
 	}
 
 	/**
@@ -29,21 +25,6 @@ public class GobbleBoard implements GobbleBoardBehavior {
 		board[r][c] = player;
 	}
 
-//	public int findOpenRow(int c) {
-//		int current = -1;
-//		for(int r = 0; r<ROWS; r++) {
-//			if (board[r][c] == -1) {
-//				current = r;
-//			} else {
-//				if (r == 0)
-//					return -1;
-//
-//				break;
-//			}
-//		}
-//		
-//		return current;
-//	}
 
 	/*
 	 * (non-Javadoc)
@@ -129,11 +110,7 @@ public class GobbleBoard implements GobbleBoardBehavior {
 	 * @see GobbleBoardBehavior#clearBoard()
 	 */
 	public void clearBoard() {
-//		for (int r = 0; r < ROWS; r++) {
-//			for (int c = 0; c < COLS; c++) {
-//				board[r][c] = -1;
-//			}
-//		}
+
 	}
 
 }

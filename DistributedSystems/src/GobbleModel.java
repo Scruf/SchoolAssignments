@@ -3,84 +3,74 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * The Class GobbleModel.
+ */
 public class GobbleModel implements ViewListener {
-//	private GobbleBoard board = new GobbleBoard();
+
+	/** The listeners. */
 	private LinkedList<ModelListener> listeners = new LinkedList<ModelListener>();
 
+	/** Indicates turn. */
 	private int turn = -1;
 
+
 	/**
-	 * Construct a new Go model.
+	 * Instantiates a new gobble model.
 	 */
 	public GobbleModel() { }
 
+
+
 	/**
-	 * Add the given model listener to this Go model.
+	 * Adds the model listener.
 	 *
-	 * @param  modelListener  Model listener.
+	 * @param modelListener the model listener
 	 */
 	public synchronized void addModelListener(ModelListener modelListener) {
-//		try {
-			// Pump up the new client with the current state of the Connect Four board.
-//			for (int r = 0; r < GobbleBoard.ROWS; ++ r) {
-//				for (int c = 0; c < GobbleBoard.COLS; ++ c) {
-//					int player = board.getPlayer(r, c);
-//					if (player != -1) {
-//						modelListener.markerAdded(r, c, player);
-//					}
-//				}
-//			}
 
-			// Record listener.
 			listeners.add(modelListener);
-//		} catch (IOException exc) {
-			// Don't record listener.
-//		}
+
 	}
 
-	/**
-	 * Join the given session.
-	 *
-	 * @param  proxy    Reference to view proxy object.
-	 * @param  session  Session name.
+
+	/* (non-Javadoc)
+	 * @see ViewListener#join(ViewProxy, java.lang.String)
 	 */
 	public void join(ViewProxy proxy, String session) { }
 
+	/* (non-Javadoc)
+	 * @see ViewListener#addMarker(int, int, int)
+	 */
 	public synchronized void addMarker(int r, int c, int player) throws IOException {
-//		r = board.findOpenRow(c);
-//
-//		if (r > -1) {
-//			// Update board state.
-//			board.setMarker(r, c, player);
 
-			// Report update to all clients.
 			Iterator<ModelListener> iter = listeners.iterator();
 			while (iter.hasNext()) {
 				ModelListener listener = iter.next();
 				try {
 					listener.markerAdded(r, c, player);
 				} catch (IOException exc) {
-					// Client failed, stop reporting to it.
+
 					iter.remove();
 				}
 			}
 
 			playerTurn(turn);
-//		}
+
 	}
 
+	/* (non-Javadoc)
+	 * @see ViewListener#clearBoard()
+	 */
 	public synchronized void clearBoard() throws IOException {
-		// Update board state.
-//		board.clearBoard();
 
-		// Report update to all clients.
 		Iterator<ModelListener> iter = listeners.iterator();
 		while (iter.hasNext()) {
 			ModelListener listener = iter.next();
 			try {
 				listener.boardCleared();
 			} catch (IOException exc) {
-				// Client failed, stop reporting to it.
+
 				iter.remove();
 			}
 		}
@@ -88,22 +78,27 @@ public class GobbleModel implements ViewListener {
 		playerTurn(1);
 	}
 
+	/* (non-Javadoc)
+	 * @see ViewListener#playerNumber(int)
+	 */
 	public synchronized void playerNumber(int player) {
-		// Report update to all clients.
+
 		Iterator<ModelListener> iter = listeners.iterator();
 		while (iter.hasNext()) {
 			ModelListener listener = iter.next();
 			try {
 				listener.playerNumber(player);
 			} catch (IOException exc) {
-				// Client failed, stop reporting to it.
 				iter.remove();
 			}
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see ViewListener#playerName(int, java.lang.String)
+	 */
 	public synchronized void playerName(int player, String name) {
-		// Report update to all clients.
+
 		Iterator<ModelListener> iter = listeners.iterator();
 		while (iter.hasNext()) {
 			ModelListener listener = iter.next();
@@ -116,23 +111,21 @@ public class GobbleModel implements ViewListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see ViewListener#playerTurn(int)
+	 */
 	public synchronized void playerTurn(int player) {
 		if (turn == -1) {
 			turn = player;
 		}
 
-//		if (board.hasWon()) {
-//			player = 0;
-//		}
-
-		// Report update to all clients.
 		Iterator<ModelListener> iter = listeners.iterator();
 		while (iter.hasNext()) {
 			ModelListener listener = iter.next();
 			try {
 				listener.playerTurn(player);
 			} catch (IOException exc) {
-				// Client failed, stop reporting to it.
+
 				iter.remove();
 			}
 		}
@@ -140,8 +133,14 @@ public class GobbleModel implements ViewListener {
 		turn = (player == 1) ? 2 : 1;
 	}
 
+	/* (non-Javadoc)
+	 * @see ViewListener#close()
+	 */
 	public void close() { }
 
+	/* (non-Javadoc)
+	 * @see ViewListener#addColor(int, int, java.awt.Color)
+	 */
 	@Override
 	public void addColor(int r, int c, Color color) throws IOException {
 		Iterator<ModelListener> iter = listeners.iterator();
@@ -150,10 +149,31 @@ public class GobbleModel implements ViewListener {
 			try {
 				listener.colorAdded(r, c, color);
 			} catch (IOException exc) {
-				// Client failed, stop reporting to it.
+	
 				iter.remove();
 			}
 		}
 		
 	}
+
+
+
+	/* (non-Javadoc)
+	 * @see ViewListener#sendWinner(java.lang.String)
+	 */
+	@Override
+	public void sendWinner(String winner) throws IOException {
+		Iterator<ModelListener> iter = listeners.iterator();
+		while (iter.hasNext()) {
+			ModelListener listener = iter.next();
+			try {
+				listener.winnerSent(winner);
+			} catch (IOException exc) {
+	
+				iter.remove();
+			}
+		}
+		
+	}
+
 }

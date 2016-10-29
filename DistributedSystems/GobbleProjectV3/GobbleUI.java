@@ -31,11 +31,8 @@ public class GobbleUI implements ModelListener
 	private String opponent; // Added.
 	private ViewListener viewListener; // Added.
 	private GobbleBoardBehavior c4board; // Added.
-	//	private C4Panel boardPanel; // Added.
-	//	private SpotButton prevSpotButton;
 	private SpotButton currentSpotButton;
 	
-//	private SpotButton tempButtonToBeDisabledForWaiting;
 
 
 	private static final int GAP = 10;
@@ -126,8 +123,7 @@ public class GobbleUI implements ModelListener
 
 	@Override
 	public void markerAdded(int r, int c, int player) throws IOException {
-		// TODO Auto-generated method stub
-		//
+		
 		for (int a = 0; a < R; a ++) {
 			for (int b = 0; b < C; b ++) {
 				spotButton[a][b].setEnabled(false);
@@ -170,37 +166,9 @@ public class GobbleUI implements ModelListener
 
 	}
 
-	//		private int [] getBlueCoords() {
-	//			int[] result = new int[2];
-	//			for (int a = 0; a < R; a ++) {
-	//				for (int b = 0; b < C; b ++) {
-	//					if (spotButton[a][b].getColor() == Color.BLUE) {
-	//						result[0] = a;
-	//						result[1] = b;
-	//						return result;
-	//					}
-	//				}
-	//			}
-	//			return null;
-	//		}
-	//		
-	//	private int [] getRedCoords() {
-	//		int[] result = new int[2];
-	//		for (int a = 0; a < R; a ++) {
-	//			for (int b = 0; b < C; b ++) {
-	//				if (spotButton[a][b].getColor() == Color.RED) {
-	//					result[0] = a;
-	//					result[1] = b;
-	//					return result;
-	//				}
-	//			}
-	//		}
-	//		return null;
-	//	}
-
 	@Override
 	public void boardCleared() throws IOException {
-		// TODO Auto-generated method stub
+		
 		for (int a = 0; a < R; a ++) {
 			for (int b = 0; b < C; b ++) {
 				spotButton[a][b].setEnabled(false);
@@ -230,7 +198,7 @@ public class GobbleUI implements ModelListener
 
 	@Override
 	public void playerNumber(int player) throws IOException {
-		// TODO Auto-generated method stub
+		
 		this.player = player;
 		if (player == 1) {
 			currentSpotButton = spotButton[0][3];
@@ -247,7 +215,7 @@ public class GobbleUI implements ModelListener
 
 	@Override
 	public void playerName(int player, String name) throws IOException {
-		// TODO Auto-generated method stub
+		
 		if (player != this.player) {
 			this.opponent = name;
 			newGameButton.setEnabled(true);
@@ -260,7 +228,7 @@ public class GobbleUI implements ModelListener
 
 	@Override
 	public void playerTurn(int player) throws IOException {
-		// TODO Auto-generated method stub
+		
 		if (player == this.player) {
 			this.waiting = false;
 			messageField.setText("Your turn");
@@ -277,7 +245,7 @@ public class GobbleUI implements ModelListener
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		
 		frame.dispose();
 		System.exit(1);
 	}

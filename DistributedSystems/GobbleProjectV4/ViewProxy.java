@@ -83,7 +83,9 @@ public class ViewProxy implements ModelListener {
 	/* (non-Javadoc)
 	 * @see ModelListener#close()
 	 */
-	public void close() { }
+	public void close() { 
+		out.println("close ");
+	}
 
 
 	/**
@@ -133,6 +135,9 @@ public class ViewProxy implements ModelListener {
 								break;
 							case "sendwinner":
 								viewListener.sendWinner(parts[1]);
+								break;
+							case "close":
+								viewListener.close();
 								break;
 							default:
 								System.err.println("Bad message");

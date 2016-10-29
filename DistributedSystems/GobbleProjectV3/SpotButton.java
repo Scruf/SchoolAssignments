@@ -6,14 +6,18 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 
+/**
+ * Class SpotButton provides a spot button object for the network Gobble game.
+ *
+ * @author  Alan Kaminsky
+ * @version 10-Oct-2016
+ */
 public class SpotButton
 	extends JPanel
 	{
 	private static final int L = 3;
 
 	private Color color = Color.LIGHT_GRAY;
-	
-	private int row, column;
 
 	/**
 	 * Construct a new spot button object.
@@ -21,12 +25,6 @@ public class SpotButton
 	public SpotButton()
 		{
 		}
-	
-	public SpotButton(int row, int column)
-	{
-		this.row = row;
-		this.column = column;
-	}
 
 	/**
 	 * Set this spot button's color.
@@ -82,24 +80,4 @@ public class SpotButton
 			gg.fillRect (0, 0, W, H);
 			}
 		}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public int getRow() {
-		return row;
-	}
-
-	public int getColumn() {
-		return column;
-	}
-
-	public void setRow(int row) {
-		this.row = row;
-	}
-
-	public void setColumn(int column) {
-		this.column = column;
-	}
 	}

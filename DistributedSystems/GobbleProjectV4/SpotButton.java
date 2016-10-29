@@ -7,20 +7,17 @@ import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 
 /**
- * The Class SpotButton.
+ * Class SpotButton provides a spot button object for the network Gobble game.
+ *
+ * @author  Alan Kaminsky
+ * @version 10-Oct-2016
  */
 public class SpotButton
 	extends JPanel
 	{
-	
-	/** The Constant L. */
 	private static final int L = 3;
 
-	/** The color. */
 	private Color color = Color.LIGHT_GRAY;
-	
-	/** The column. */
-	private int row, column;
 
 	/**
 	 * Construct a new spot button object.
@@ -28,23 +25,11 @@ public class SpotButton
 	public SpotButton()
 		{
 		}
-	
-	/**
-	 * Instantiates a new spot button.
-	 *
-	 * @param row the row
-	 * @param column the column
-	 */
-	public SpotButton(int row, int column)
-	{
-		this.row = row;
-		this.column = column;
-	}
 
 	/**
 	 * Set this spot button's color.
 	 *
-	 * @param color the new color
+	 * @param  color  Color.
 	 */
 	public void setColor
 		(Color color)
@@ -56,7 +41,7 @@ public class SpotButton
 	/**
 	 * Add the given action listener to this spot button.
 	 *
-	 * @param listener the listener
+	 * @param  listener  Action listener.
 	 */
 	public void addActionListener
 		(ActionListener listener)
@@ -74,8 +59,6 @@ public class SpotButton
 
 	/**
 	 * Paint this component.
-	 *
-	 * @param g the g
 	 */
 	protected void paintComponent
 		(Graphics g)
@@ -97,49 +80,4 @@ public class SpotButton
 			gg.fillRect (0, 0, W, H);
 			}
 		}
-
-	/**
-	 * Gets the color.
-	 *
-	 * @return the color
-	 */
-	public Color getColor() {
-		return color;
-	}
-
-	/**
-	 * Gets the row.
-	 *
-	 * @return the row
-	 */
-	public int getRow() {
-		return row;
-	}
-
-	/**
-	 * Gets the column.
-	 *
-	 * @return the column
-	 */
-	public int getColumn() {
-		return column;
-	}
-
-	/**
-	 * Sets the row.
-	 *
-	 * @param row the new row
-	 */
-	public void setRow(int row) {
-		this.row = row;
-	}
-
-	/**
-	 * Sets the column.
-	 *
-	 * @param column the new column
-	 */
-	public void setColumn(int column) {
-		this.column = column;
-	}
 	}

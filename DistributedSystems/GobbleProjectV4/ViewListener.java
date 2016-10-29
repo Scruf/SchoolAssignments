@@ -83,7 +83,7 @@ public interface ViewListener {
 	/**
 	 * Report that the windows should be closed.
 	 */
-	public void close();
+	public void close()  throws IOException;
 	
 	/**
 	 * Sends winner's name.

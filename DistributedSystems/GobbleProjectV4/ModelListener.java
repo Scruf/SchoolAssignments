@@ -65,7 +65,7 @@ public interface ModelListener {
 	/**
 	 * Closes game.
 	 */
-	public void close();
+	public void close() throws IOException;
 	
 	/**
 	 * Reports that the color is added to given button.
