@@ -115,8 +115,8 @@ public class GobbleUI implements ModelListener
 				SpotButton spot = spotButton[r][c] = new SpotButton();
 				spot.setMinimumSize(new Dimension(rr, cc));
 				spot.setEnabled (false);
+				spot.setColor(Color.yellow);
 				spot.addActionListener(new ActionListener() {
-
 					@Override
 					public void actionPerformed(ActionEvent e) {
 
@@ -125,8 +125,7 @@ public class GobbleUI implements ModelListener
 							viewListener.addMarker(rr, cc, player);
 							spotButton[getRow(currentSpotButton)][getColumn(currentSpotButton)].setColor(frame.getBackground());
 							viewListener.addColor(getRow(currentSpotButton), getColumn(currentSpotButton), frame.getBackground());
-
-							currentSpotButton.setMinimumSize(new Dimension(rr, cc));
+                           	currentSpotButton.setMinimumSize(new Dimension(rr, cc));
 							checkWinner();
 						} catch (IOException e1) {
 							e1.printStackTrace();
@@ -135,6 +134,7 @@ public class GobbleUI implements ModelListener
 				});
 				p2.add (spot);
 			}
+
 		p1.add (p2);
 
 		newGameButton = new JButton ("New Game");
@@ -357,7 +357,7 @@ public class GobbleUI implements ModelListener
 			}
 		}
 
-		spotButton[3][0].setColor(Color.BLUE);
+		spotButton[3][0].setColor(Color.LIGHT_GRAY);
 		spotButton[0][3].setColor(Color.RED);
 
 
