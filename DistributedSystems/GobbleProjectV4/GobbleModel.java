@@ -138,11 +138,16 @@ public class GobbleModel implements ViewListener {
 	 */
 	public void close() throws IOException { 
 		Iterator<ModelListener> iter = listeners.iterator();
+		
 		while (iter.hasNext()) {
+			iter.next();
+			iter.remove();
 			ModelListener listener = iter.next();
 				listener.close();
-
+				
 		}
+		// System.out.printf("size of the list is %d \n ",listeners.size());
+		
 	}
 
 	/* (non-Javadoc)
@@ -169,12 +174,12 @@ public class GobbleModel implements ViewListener {
 	 * @see ViewListener#sendWinner(java.lang.String)
 	 */
 	@Override
-	public void sendWinner(String winner) throws IOException {
+	public void sendWinner(String winner, int player) throws IOException {
 		Iterator<ModelListener> iter = listeners.iterator();
 		while (iter.hasNext()) {
 			ModelListener listener = iter.next();
 			try {
-				listener.winnerSent(winner);
+				listener.winnerSent(winner, player);
 			} catch (IOException exc) {
 	
 				iter.remove();
