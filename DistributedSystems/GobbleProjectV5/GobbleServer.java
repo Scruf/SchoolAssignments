@@ -7,9 +7,10 @@ import java.net.Socket;
 // Package: ---
 // Unit:    Class GObbleServer
 //
-// This Java source file is copyright (C) 2015 by Alan Kaminsky. All rights
+//
+// This Java source file is copyright (C) 2015 Egor Kozitski. All rights
 // reserved. For further information, contact the author, Alan Kaminsky, at
-// ark@cs.rit.edu.
+// ek5442@g.rit.edu
 //
 // This Java source file is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by the Free

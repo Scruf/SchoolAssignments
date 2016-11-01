@@ -7,10 +7,10 @@ import java.util.Random;
 // File:    SessionManager.java
 // Package: ---
 // Unit:    Class SessionManager
-//
-// This Java source file is copyright (C) 2015 by Alan Kaminsky. All rights
+///
+// This Java source file is copyright (C) 2015 Egor Kozitski. All rights
 // reserved. For further information, contact the author, Alan Kaminsky, at
-// ark@cs.rit.edu.
+// ek5442@g.rit.edu
 //
 // This Java source file is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by the Free
@@ -67,41 +67,68 @@ public class SessionManager implements ViewListener {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see ViewListener#addMarker(int, int, int)
+	/**
+	 * Place a marker on the board.
+	 *
+	 * @param r            Row on which to place the marker.
+	 * @param c            Column on which to place the marker.
+	 * @param player the player
+	 * @exception IOException                Thrown if an I/O error occurred.
 	 */
 	public void addMarker(int r, int c, int player) {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see ViewListener#clearBoard()
+		/**
+	 * Report that the Connect board was cleared.
+	 * 
+	 * @exception IOException
+	 *                Thrown if an I/O error occurred.
 	 */
 	public void clearBoard() throws IOException { }
 	
-	/* (non-Javadoc)
-	 * @see ViewListener#playerNumber(int)
+		/**
+	 * Report that the current player is 1 or 2.
+	 *
+	 * @param player            The player number.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void playerNumber(int player, int sessionID) throws IOException { }
 	
-	/* (non-Javadoc)
-	 * @see ViewListener#playerTurn(int)
+/**
+	 * Report which player's turn it is.
+	 *
+	 * @param player            The player ID.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void playerTurn(int player) throws IOException { }
 	
-	/* (non-Javadoc)
-	 * @see ViewListener#playerName(int, java.lang.String)
+		/**
+	 * Report a certain player is player 1 or 2.
+	 *
+	 * @param player            The player ID.
+	 * @param name            The name of the player.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void playerName(int player, String name) throws IOException { }
 	
 	
-	/* (non-Javadoc)
-	 * @see ViewListener#addColor(int, int, java.awt.Color)
+	
+	/**
+	 * Report that a marker was placed on the board.
+	 *
+	 * @param r            Row for the cell.
+	 * @param c            Column for the cell.
+	 * @param color the color
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void addColor(int r, int c, Color color) throws IOException {}
 	
-	/* (non-Javadoc)
-	 * @see ViewListener#sendWinner(java.lang.String)
+	/**
+	 * Sends winner's name.
+	 *
+	 * @param winner the winner's name
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public void sendWinner(String winner, int player) throws IOException {}
 
