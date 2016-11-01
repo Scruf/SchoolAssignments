@@ -62,8 +62,8 @@ public class ViewProxy implements ModelListener {
 	/* (non-Javadoc)
 	 * @see ModelListener#playerNumber(int)
 	 */
-	public void playerNumber(int player) throws IOException {
-		out.println("number " + player);
+	public void playerNumber(int player, int sessionID) throws IOException {
+		out.println("number " + player + " " + sessionID);
 	}
 
 	/* (non-Javadoc)
@@ -83,11 +83,9 @@ public class ViewProxy implements ModelListener {
 	/* (non-Javadoc)
 	 * @see ModelListener#close()
 	 */
-	
-	public void close() throws IOException{ 
-		
-		out.println("close ");
-		
+	@Override
+	public void close(int sessionID) throws IOException { 
+		out.println("close " + sessionID);
 	}
 
 
@@ -107,7 +105,7 @@ public class ViewProxy implements ModelListener {
 					if (b != null) {
 						b = b.trim();
 					} else {
-						close();
+//						close();
 						break;
 					}
 
@@ -116,7 +114,7 @@ public class ViewProxy implements ModelListener {
 						System.err.println("Bad message");
 					} else {
 						String[] parts = b.split(" ");
-						System.out.print(parts[0]);
+
 						switch (parts[0]) {
 							case "join":
 								String name = parts[1];
@@ -140,7 +138,10 @@ public class ViewProxy implements ModelListener {
 								viewListener.sendWinner(parts[1], Integer.parseInt(parts[2]));
 								break;
 							case "close":
-								viewListener.close();
+								viewListener.close(Integer.valueOf(parts[1]));
+								break;
+							case "number":
+								viewListener.playerNumber(Integer.valueOf(parts[1]), Integer.valueOf(parts[2]));
 								break;
 							default:
 								System.err.println("Bad message");
@@ -175,5 +176,4 @@ public class ViewProxy implements ModelListener {
 		out.println("sendwinner " + winner + " " + player);
 		
 	}
-
 }

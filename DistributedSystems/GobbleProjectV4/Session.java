@@ -17,7 +17,7 @@ public class Session {
 	
 	/** The player2 name. */
 	private String player2Name;
-
+	private Integer sessionID;
 	/**
 	 * Joins the new player (client).
 	 *
@@ -25,13 +25,13 @@ public class Session {
 	 * @param name the name
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public void join(ViewProxy proxy, String name) throws IOException {
+	public void join(ViewProxy proxy, String name, Integer sessionID) throws IOException {
 		if (numPlayers == 0) {
 			player1Name = name;
 		} else {
 			player2Name = name;
 		}
-
+		
 		model.addModelListener(proxy);
 		proxy.setViewListener(model);
 
@@ -53,5 +53,8 @@ public class Session {
 	 */
 	public int getNumPlayers() {
 		return this.numPlayers;
+	}
+	public int getSessionID(){
+		return this.sessionID;
 	}
 }
