@@ -48,7 +48,13 @@ public class GobbleServer {
 		if (args.length != 2) usage();
 
 		String host = args[0];
-		int port = Integer.parseInt(args[1]);
+		int port = 0;
+		try{
+			port = Integer.parseInt(args[1]);
+		}catch (Exception ex){
+			System.err.println("Usage: java GobbleServer <serverhost> <serverport>");
+			System.exit(1);
+		}
 
 		ServerSocket serversocket = new ServerSocket();
 		serversocket.bind(new InetSocketAddress(host, port));

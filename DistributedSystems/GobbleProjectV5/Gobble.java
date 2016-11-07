@@ -1,15 +1,14 @@
 import java.net.InetSocketAddress;
 import java.net.Socket;
-
 //******************************************************************************
 //
 // File:    Gobble.java
 // Package: ---
-// Unit:    Gobble 
+// Unit:    Class Gobble
 //
-// This Java source file is copyright (C) 2015 Egor Kozitski. All rights
-// reserved. For further information, contact the author, Alan Kaminsky, at
-// ek5442@g.rit.edu
+// This Java source file is copyright (C) 2015 by Egor Kozitski. All rights
+// reserved. For further information, contact the author, Egor Kozitski, at
+// ek5442@g.rit.edu.
 //
 // This Java source file is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by the Free
@@ -25,6 +24,9 @@ import java.net.Socket;
 // at http://www.gnu.org/licenses/gpl.html.
 //
 //******************************************************************************
+/**
+ * The Class Gobble.
+ */
 public class Gobble {
 
 
