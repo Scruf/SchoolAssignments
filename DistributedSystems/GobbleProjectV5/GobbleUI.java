@@ -427,11 +427,12 @@ public class GobbleUI implements ModelListener
 		if (player == 1) {
 			currentSpotButton = spotButton[0][3];
 			currentSpotButton.setColor(Color.RED);
-			spotButton[3][0].setColor(Color.LIGHT_GRAY);
+			spotButton[3][0].setVisible(false);
 
 			currentSpotButton.setMinimumSize(new Dimension(0, 3));
 		} else {
 			currentSpotButton = spotButton[3][0];
+			currentSpotButton.setVisible(true);
 			currentSpotButton.setColor(Color.BLUE);
 
 			currentSpotButton.setMinimumSize(new Dimension(3, 0));

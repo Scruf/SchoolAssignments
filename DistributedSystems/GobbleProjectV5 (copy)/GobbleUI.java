@@ -14,6 +14,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.SwingUtilities;
 
 //******************************************************************************
@@ -132,12 +134,16 @@ public class GobbleUI implements ModelListener
 		p2.setMinimumSize (PD);
 		p2.setPreferredSize (PD);
 		p2.setLayout (new GridLayout (R, C));
+
 		for (int r = 0; r < R; ++ r)
 			for (int c = 0; c < C; ++ c)
 			{
 				final int rr = r;
 				final int cc = c;
 				SpotButton spot = spotButton[r][c] = new SpotButton();
+				if((r==3) && (c==0)){
+					spot.setVisible(false);	
+				}
 				spot.setMinimumSize(new Dimension(rr, cc));
 				spot.setEnabled (false);
 				spot.setColor(Color.YELLOW);
@@ -181,6 +187,7 @@ public class GobbleUI implements ModelListener
 		messageField.setEditable (false);
 		p1.add (Box.createVerticalStrut (GAP));
 		p1.add (messageField);
+		
 		
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -432,7 +439,6 @@ public class GobbleUI implements ModelListener
 		if (player == 1) {
 			currentSpotButton = spotButton[0][3];
 			currentSpotButton.setColor(Color.RED);
-			spotButton[3][0].setColor(Color.LIGHT_GRAY);
 
 			currentSpotButton.setMinimumSize(new Dimension(0, 3));
 		} else {
@@ -460,6 +466,8 @@ public class GobbleUI implements ModelListener
 		}
 		if (player == 1) {
 			waiting = false;
+			spotButton[3][0].setVisible(true);
+			spotButton[3][0].setColor(Color.BLUE);
 		}
 	}
 	
@@ -584,5 +592,5 @@ public class GobbleUI implements ModelListener
 		}
 
 	}
-
+	
 }
