@@ -350,9 +350,16 @@ public class GobbleUI implements ModelListener
 
 			}
 		}
-		System.out.printf("Number of enabled cells is-> %d\n",enabled);
+		if(!isFoodForPlayer1 && !waiting && !isFoodForPlayer2){
+			disableButtons();
+			return 0;
+		}
 		if(enabled==0){
-			System.out.print("Player 1 has 0 enabled cells");
+			isFoodForPlayer1=false;
+			// System.out.println(waiting);
+			// System.out.println(isFoodForPlayer1);
+			// System.out.println(isFoodForPlayer2);
+			// System.out.print("It was called in player 1");
 			disableButtons();
 			return 2;
 			// isFoodForPlayer1 = false;
@@ -374,25 +381,30 @@ public class GobbleUI implements ModelListener
 
 			}
 		}
-		System.out.printf("Number of enabled cells is-> %d\n",enabled);
-		if(enabled==0){
+		// if (!isFoodForPlayer1 && !isFoodForPlayer2 && enabled == 0)
+		if(isFoodForPlayer1 && !isFoodForPlayer2){
+			isFoodForPlayer1=true;
+			isFoodForPlayer2=true;
+			enabled++;
+		}
+		if(enabled==0 ){
 			isFoodForPlayer2 = false;
-			System.out.print("Player 2 has 0 enabled cells");
+			System.out.print("It was called in player 2");
 			disableButtons();
 			return 1;
 		}
-
-		if (isFoodForPlayer1 && !isFoodForPlayer2 && player == 1 && !waiting) { // If no enabled buttons around the player 2.
-			disableButtons(); // Disable all buttons.
-			return 1;
-		} else if (!isFoodForPlayer1 && isFoodForPlayer2 && player == 2 && !waiting) { // If no enabled buttons around the player 1.
-			disableButtons();
-			return 2;
-		} else if (!isFoodForPlayer1 && !isFoodForPlayer2) { // If no enabled buttons around the both of players.
-		return 0;
-		} else {  // If there are enabled buttons for both of players.
-			return -1;
-		}
+		return -1;
+		// if (isFoodForPlayer1 && !isFoodForPlayer2 && player == 1 && !waiting) { // If no enabled buttons around the player 2.
+		// 	disableButtons(); // Disable all buttons.
+		// 	return 1;
+		// } else if (!isFoodForPlayer1 && isFoodForPlayer2 && player == 2 && !waiting) { // If no enabled buttons around the player 1.
+		// 	disableButtons();
+		// 	return 2;
+		// } else if (!isFoodForPlayer1 && !isFoodForPlayer2) { // If no enabled buttons around the both of players.
+		// return 0;
+		// } else {  // If there are enabled buttons for both of players.
+		// 	return -1;
+		// }
 
 	}
 	
@@ -528,6 +540,7 @@ public class GobbleUI implements ModelListener
 				messageField.setText(this.opponent + " won!");
 			}
 		} else if (win == 0) {
+			
 			messageField.setText("Draw!");
 		}
 		frame.repaint();
