@@ -127,6 +127,7 @@ public class GobbleModelClone implements ModelListener {
 	public void colorAdded(int r, int c, Color color) throws IOException {
 
 		modelListener.colorAdded(r, c, color);
+		
 	}
 
 

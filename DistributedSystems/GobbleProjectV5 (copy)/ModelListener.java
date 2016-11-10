@@ -109,5 +109,4 @@ public interface ModelListener {
 	 */
 	public void winnerSent(String winner, int player) throws IOException;
 
-
 }

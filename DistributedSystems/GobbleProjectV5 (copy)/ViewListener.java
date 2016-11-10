@@ -116,5 +116,5 @@ public interface ViewListener {
 	 */
 	public void sendWinner(String winner, int player) throws IOException;
 
-
+	
 }

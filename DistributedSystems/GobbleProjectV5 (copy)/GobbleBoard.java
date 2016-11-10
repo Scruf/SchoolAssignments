@@ -1,8 +1,11 @@
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-public class GobbleBoard {
+import java.awt.Color;
 
-	public void somethingHappened(MouseEvent e){
-		
+public class GobbleBoard {
+	SpotButton [][] spot;
+	GobbleBoard(SpotButton [][] spots){
+		this.spot = spots;
+	}
+	public void setSpot(int r,int c, Color color){
+		spot[r][c].setColor(color);
 	}
 }

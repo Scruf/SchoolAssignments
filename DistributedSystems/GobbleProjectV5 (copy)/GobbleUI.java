@@ -158,7 +158,7 @@ public class GobbleUI implements ModelListener
 							viewListener.addColor(getRow(currentSpotButton), getColumn(currentSpotButton), frame.getBackground());
 
 							currentSpotButton.setMinimumSize(new Dimension(rr, cc));
-							checkWinner();
+							
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
@@ -251,32 +251,34 @@ public class GobbleUI implements ModelListener
 
 		if (player == 1) {
 			spotButton[r][c].setColor(Color.RED);
-
+			
+			
 		} else {
 			spotButton[r][c].setColor(Color.BLUE);
-
+		
 		}
-
 		if (waiting) {
 			for (int i = 0; i < 4; i ++) {
 				try {
 					SpotButton sb = spotButton[getRow(currentSpotButton) + 
 					                           ROWS[i]][getColumn(currentSpotButton) + 
 					                                    COLS[i]];
+
+
 					Field f = sb.getClass().getDeclaredField("color");
 					f.setAccessible(true);
 					Color color = (Color) f.get(sb);
 					if (color == Color.YELLOW) {
 						sb.setEnabled(true);
 					}
-
+					checkWinner();
 				} catch (Exception exc) {
 
 				}
 			}
 		}
-
-		checkWinner();
+		// checkWinner();
+		
 		
 	}
 	
@@ -331,38 +333,54 @@ public class GobbleUI implements ModelListener
 
 		boolean isFoodForPlayer1 = false;
 		boolean isFoodForPlayer2 = false;
+		int enabled = 0;
+
 		for (int i = 0; i < 4; i ++) { // To get round the spot button of player 1 to
 			// define whether there is at least one enabled spot button.
 			
 			try {
-				SpotButton sbp1 = spotButton[getRow(player1) + 
-				                             ROWS[i]][getColumn(player1) + COLS[i]];
+				SpotButton sbp1 = spotButton[getRow(player1)+ROWS[i]][getColumn(player1) + COLS[i]];
 
 				if (getSpotButtonColor(sbp1) == Color.YELLOW) {
 					isFoodForPlayer1 = true;
-					break;
+					enabled++;
 				}
 
 			} catch (Exception exc) {
 
 			}
 		}
-
+		System.out.printf("Number of enabled cells is-> %d\n",enabled);
+		if(enabled==0){
+			System.out.print("Player 1 has 0 enabled cells");
+			disableButtons();
+			return 2;
+			// isFoodForPlayer1 = false;
+		}
+		else
+			enabled = 0;
 		for (int i = 0; i < 4; i ++) {// To get round the spot button of player 2 to
 			// define whether there is at least one enabled spot button.
 			
 			try {
 				SpotButton sbp2 = spotButton[getRow(player2) + 
 				                             ROWS[i]][getColumn(player2) + COLS[i]];
-				if (getSpotButtonColor(sbp2) == Color.YELLOW) {
+				if (getSpotButtonColor(sbp2) == Color.YELLOW ) {
 					isFoodForPlayer2 = true;
-					break;
+					enabled++;
+
 				}
 			} catch (Exception exc) {
 
 			}
 		}
-
+		System.out.printf("Number of enabled cells is-> %d\n",enabled);
+		if(enabled==0){
+			isFoodForPlayer2 = false;
+			System.out.print("Player 2 has 0 enabled cells");
+			disableButtons();
+			return 1;
+		}
 
 		if (isFoodForPlayer1 && !isFoodForPlayer2 && player == 1 && !waiting) { // If no enabled buttons around the player 2.
 			disableButtons(); // Disable all buttons.

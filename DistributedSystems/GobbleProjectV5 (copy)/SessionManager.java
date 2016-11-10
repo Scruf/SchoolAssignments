@@ -133,9 +133,5 @@ public class SessionManager implements ViewListener {
 	public void sendWinner(String winner, int player) throws IOException {}
 
 	@Override
-	public void close(int sessionID) throws IOException {
-		
-		
-		
-	}
+	public void close(int sessionID) throws IOException {}
 }
