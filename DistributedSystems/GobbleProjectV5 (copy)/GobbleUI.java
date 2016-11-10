@@ -333,7 +333,7 @@ public class GobbleUI implements ModelListener
 
 		boolean isFoodForPlayer1 = false;
 		boolean isFoodForPlayer2 = false;
-		int enabled = 0;
+		int first_enabled = 0;
 
 		for (int i = 0; i < 4; i ++) { // To get round the spot button of player 1 to
 			// define whether there is at least one enabled spot button.
@@ -342,30 +342,24 @@ public class GobbleUI implements ModelListener
 				SpotButton sbp1 = spotButton[getRow(player1)+ROWS[i]][getColumn(player1) + COLS[i]];
 
 				if (getSpotButtonColor(sbp1) == Color.YELLOW) {
-					isFoodForPlayer1 = true;
-					enabled++;
+					// isFoodForPlayer1 = true;
+					first_enabled++;
 				}
 
 			} catch (Exception exc) {
 
 			}
 		}
-		if(!isFoodForPlayer1 && !waiting && !isFoodForPlayer2){
-			disableButtons();
-			return 0;
-		}
-		if(enabled==0){
+		
+		if(first_enabled==0){
 			isFoodForPlayer1=false;
-			// System.out.println(waiting);
-			// System.out.println(isFoodForPlayer1);
-			// System.out.println(isFoodForPlayer2);
-			// System.out.print("It was called in player 1");
+			isFoodForPlayer2=true;
+
 			disableButtons();
 			return 2;
-			// isFoodForPlayer1 = false;
+		
 		}
-		else
-			enabled = 0;
+		int enabled=0;
 		for (int i = 0; i < 4; i ++) {// To get round the spot button of player 2 to
 			// define whether there is at least one enabled spot button.
 			
@@ -373,7 +367,7 @@ public class GobbleUI implements ModelListener
 				SpotButton sbp2 = spotButton[getRow(player2) + 
 				                             ROWS[i]][getColumn(player2) + COLS[i]];
 				if (getSpotButtonColor(sbp2) == Color.YELLOW ) {
-					isFoodForPlayer2 = true;
+					// isFoodForPlayer2 = true;
 					enabled++;
 
 				}
@@ -381,19 +375,19 @@ public class GobbleUI implements ModelListener
 
 			}
 		}
-		// if (!isFoodForPlayer1 && !isFoodForPlayer2 && enabled == 0)
-		if(isFoodForPlayer1 && !isFoodForPlayer2){
-			isFoodForPlayer1=true;
-			isFoodForPlayer2=true;
-			enabled++;
-		}
-		if(enabled==0 ){
+		
+		if(enabled==0 && first_enabled>0){
+				
 			isFoodForPlayer2 = false;
-			System.out.print("It was called in player 2");
+			isFoodForPlayer1 = true;
 			disableButtons();
 			return 1;
 		}
-		return -1;
+		// System.out.println(isFoodForPlayer1);
+		// 	System.out.println(isFoodForPlayer2);
+		// 	System.out.println(enabled);
+		// 	System.out.println(first_enabled);
+
 		// if (isFoodForPlayer1 && !isFoodForPlayer2 && player == 1 && !waiting) { // If no enabled buttons around the player 2.
 		// 	disableButtons(); // Disable all buttons.
 		// 	return 1;
@@ -405,7 +399,7 @@ public class GobbleUI implements ModelListener
 		// } else {  // If there are enabled buttons for both of players.
 		// 	return -1;
 		// }
-
+		return -1;
 	}
 	
 	/**
@@ -540,7 +534,6 @@ public class GobbleUI implements ModelListener
 				messageField.setText(this.opponent + " won!");
 			}
 		} else if (win == 0) {
-			
 			messageField.setText("Draw!");
 		}
 		frame.repaint();
