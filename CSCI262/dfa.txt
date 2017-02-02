@@ -2,7 +2,7 @@
 # this DFA recognizes any string of 0s and 1s ending in a 1
 # Diagram is in Sipser Example 1.7
 # Q ­ the set of states
-q1 q2
+q1! q2
 #Sigma ­ the alphabet
 0 1
 # q_0 ­ the start state
