@@ -3,13 +3,9 @@
   (lambda (xs)
     (cadr xs)))
 
-    
 (define one?
   (lambda (xs)
-    (cond [(= (length xs) 1) #t]
-          [else #f])))
-
-
-(define insert
-  (lambda (xs ys)
-    (cons xs ys)))
+   (cond
+     [(null? xs) #f]
+     [(null? (cdr xs)) #t]
+         [else #f])))
