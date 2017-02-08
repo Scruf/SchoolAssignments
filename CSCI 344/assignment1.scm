@@ -22,3 +22,7 @@
       [else (+ 1 (index sym (cdr syms)))])))
 
      
+#3.1
+(define insert
+  (lambda (xs ys)
+    (cons xs ys)))
