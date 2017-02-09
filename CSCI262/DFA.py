@@ -1,12 +1,40 @@
 import sys
 import re
 """
-	@param transition is a list of transition 
-	@param alphabet is a alphabet is a st of accepted characters
+	Checks whether state in the right form
 """
-def transition_check(transiton,alphabet):
-	#check middle element for alphabet characters
-	pass
+def state_match(state,reg):
+	for s in state:
+		if reg.match(s) is None:
+			return False 
+	return True
+"""
+	Checks whether alphabet in the right form
+"""
+def alphabet_check(alphabet,reg):
+	if len(alphabet) > 1:
+		return False
+
+	for alp in alphabet:
+		if reg.match(alp) is None:
+			return False
+	return True
+"""
+	Check whether transitions are valid
+"""
+def transition_check(transitions,alphabet,state):
+	for transition in transitions:
+		if len(transition.split(' ')) > 3:
+			return False
+		if not transition.split(' ')[0] in state \
+			and transition.split(' ')[2] in state:
+			return False
+		if not transition.split(' ')[1] in alphabet:
+			return False
+	return True
+
+
+
 
 file_name = input ("DFA specification file name:")
 
@@ -35,45 +63,65 @@ alphabet_regex = re.compile(r'[a-zA-Z0-9]')
 
 #the set of states
 states = _file_content[0].split(' ')
+
+for state in states:
+	if not state_match(state,state_regex):
+		print("Invalid state %s"%state)
+		sys.exit(0)
 #alphabet
 alphabet = _file_content[1].split(' ')
+for alp in alphabet:
+	if not alphabet_check(alp,alphabet_regex):
+		print("Invalid alphabet")
+		sys.exit(0)
+
 
 #start state
 q0 = _file_content[2]
-
-states = list(filter (lambda state: state_regex.match(state), states))
-#is in the states
-alphabet = list(filter (lambda alphabet: alphabet_regex.match(alphabet),alphabet))
-
-if None in states:
-	print("Invalid states")
-	sys.exit(0)
-print(states)
-
 if q0 not in states:
-	print("q0 state is not in the set of states")
+	print("Start state not in states")
 	sys.exit(0)
+
+
 #set of accepted states
 set_of_accepted_states =  _file_content[3].split(' ')
+for state in set_of_accepted_states:
+	if state not in states:
+		print("Accepted state not in set of states")
+		sys.exit(0)
+
+
 #check whether accepted state is in the set of states
 
-for _set in set_of_accepted_states:
-	if _set not in states:
-		print("accepeted stated is not in the set of states")
-		sys.exit(0)
 
 #transition function
 delta_function = _file_content[4:]
-#check delta function
+delta_function = list(filter(None, delta_function))
 
+#check delta function
+if not transition_check(delta_function,alphabet,states):
+	print("Invalid transition")
+	sys.exit(0)
 	
+if len(delta_function) > len(alphabet)*len(states):
+	print("Invalid number of states")
+	sys.exit(0)
 #display file content
 content = """
-			Q = {{{}}}
-			Sigma = {{{}}}
-			q0 = {}
-			F = {{{}}}
+Q = {{{}}}
+Sigma = {{{}}}
+q0 = {}
+F = {{{}}}
 		  """.format(', '.join(map(lambda x: "'" + x + "'", states)), \
-		  			', '.join(map(lambda x: "'" + x + "'", alphabet)), \
-		  			q0,''.join(set_of_accepted_states))
+					', '.join(map(lambda x: "'" + x + "'", alphabet)), \
+					q0,''.join(set_of_accepted_states))
+
+transition_string = ""
+
+for delta in delta_function:
+	transition_string = transition_string + """transition: ({}) -> {}\n""".format(
+		', '.join(delta.split(' ')[:2]), delta.split(' ')[2]
+	)
+
 print(content)
+print(transition_string)
