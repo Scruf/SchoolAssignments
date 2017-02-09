@@ -22,7 +22,17 @@
       [else (+ 1 (index sym (cdr syms)))])))
 
      
-#3.1
+;3
 (define insert
   (lambda (xs ys)
-    (cons xs ys)))
+    (cond
+     [(null? ys) (cons xs ys)]
+     [(<= xs (car ys))(cons xs ys)]
+     [else (cons (car ys)(insert xs (cdr ys)))])))
+
+
+(define insertion-sort
+  (lambda (ys)
+    (cond
+      [(null? ys) '()]
+      [else (insert (car ys)(insertion-sort (cdr ys)))])))
