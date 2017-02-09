@@ -36,3 +36,10 @@
     (cond
       [(null? ys) '()]
       [else (insert (car ys)(insertion-sort (cdr ys)))])))
+
+(define filter-by
+  (lambda (p L)
+    (cond
+      [(null? L) '()]
+      [(p (car L)) (cons  (car L) (filter-by p (cdr L)))]
+      [else (filter-by p (cdr L))])))
