@@ -125,3 +125,24 @@ for delta in delta_function:
 
 print(content)
 print(transition_string)
+transition_dict = {
+	
+}
+for state in states:
+	temp = {
+		state:{}
+	}
+	for delta in delta_function:
+		if delta.split(' ')[0] == state:
+			#wow lol it worked from the first try
+			temp[state].update({delta.split(' ')[1]:delta.split(' ')[2]})
+	transition_dict.update(temp)
+
+while True:
+	_str =  input("-> ")
+	if '.' == _str:
+		print('goodbye')
+		sys.exit(0)
+
+	if _str not in alphabet:
+		print("->\nrejected")
