@@ -143,6 +143,17 @@ while True:
 	if '.' == _str:
 		print('goodbye')
 		sys.exit(0)
+	final_state = ''
+	for char in _str:
+		if char not in alphabet:
+			print("Error:", char, "not in alphabet",  file=sys.stderr)
+			final_state = ' '
+			break
+		else:
+			final_state = transition_dict[q0][char]
+	
+	if final_state in set_of_accepted_states:
+		print('accept')
+	else:
+		print('reject')
 
-	if _str not in alphabet:
-		print("->\nrejected")
