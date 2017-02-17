@@ -16,3 +16,10 @@
 
 
 
+(define odd
+  (lambda (xs)
+    (cond
+      [(null? xs) '()]
+      [(null? (cdr xs))'()]
+      [else (cons (cadr xs) (odd (cddr xs)))])))
+(odd '(1 2 3 4 5 6 7 8 9))
