@@ -116,9 +116,22 @@
 ; (eq? (product? '3) #f)
 
 ; make-sum: ArithExp ArithExp -> ProductExp
-(define (make-product e1 e2) (list '* e1 e2))
+(define (make-product e1 e2)
+  (cond
+    [(and (number? e1) (number? e2)(* e1 e2))]
+    [(eq? e1 1) e2]
+    [(eq? e2 1 ) e1]
+    [(or (eq? e1 0) (eq? e2 0)) 0]
+    [else (list '* e1 e2)]))
+(display "Testing make-product\n")
+(eq? (make-product 2 3) 6)
+(eq? (make-product 1 'x) 'x)
+(eq? (make-product 'x 1) 'x)
+(eq? (make-product 0 'x) 0)
+(eq? (make-product 'x 0) 0)
+(equal? (make-product 'x 'y) '(* x y))
+(display "End of make-product test\n")
 
-; (equal? (make-product 2 3) '(* 2 3))
 
 ;; sums and products will use the same selectors
 
@@ -144,6 +157,6 @@
  (= (deriv 1 'x) 0)
  (= (deriv 'y 'x) 0)
  (= (deriv 'x 'x) 1)
- (equal? (deriv (make-sum (make-product 'x 'x) (make-product (make-expt 'x 3) 5)) 'x) '(+ (+ (* x 1) (* x 1)) (+ (* (^ x 3) 0) (* 5 (* 3 (^ x 2))))))
+ 
 
 
