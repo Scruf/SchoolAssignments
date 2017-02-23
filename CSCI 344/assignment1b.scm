@@ -49,3 +49,103 @@
 
   
 (odd '(1 2 3 4 5 6 7 8 9))
+(define make-expt
+  (lambda (e n)
+    (cons '^ (list e n))))
+
+;(equal? (make-expt '(+ x 2) 2) '(^ (+ x 2) 2))
+;(equal? (make-expt 'x 2) '(^ x 2))
+
+
+#lang scheme
+;(define (make-expt e n) (list'^ e n))
+
+(define make-expt
+  (lambda (e n)
+    (cons '^ (list e n))))
+
+;(equal? (make-expt '(+ x 2) 2) '(^ (+ x 2) 2))
+;(equal? (make-expt 'x 2) '(^ x 2))
+
+(define (arg1 e) (car (cdr e)))
+
+(define (arg2 e) (car (cdr (cdr e))))
+
+(define expt?
+  (lambda (e)
+    (cond
+      [(pair? e) #t]
+      [(eq? (car e) '^)#t]
+      [else #f])))
+
+(equal? (expt? '(^ x 2)) #t)
+(equal? (expt? '(^ x 2)) #t)
+(equal? (expt? '(^ '(+ x 2) 2)) #t)
+
+(define variable? symbol?)
+
+; (eq? (variable? 'x) #t)
+; (eq? (variable? 3) #f)
+
+; variable=?: VarExp VarExp -> Bool
+(define variable=? eq?)
+
+; (variable=? 'x 'x)
+; (not (variable=? 'x 'y))
+
+;; a sum is represented as a list with three elements: tag, e1, e2.
+;; the tag is the symbol +
+
+; sum?: Any -> Bool
+(define (sum? a) (and (pair? a) (eq? (car a) '+)))
+
+; (eq? (sum? '(+ 2 3)) #t)
+; (eq? (sum? '3) #f)
+
+; make-sum: ArithExp ArithExp -> SumExp
+(define (make-sum e1 e2) (list '+ e1 e2))
+
+; (equal? (make-sum 2 3) '(+ 2 3))
+
+;; a product is represented as a list with three elements: tag, e1, e2.
+;; the tag is the symbol *
+
+; product?: Any -> Bool
+(define (product? a) (and (pair? a) (eq? (car a) '*)))
+
+; (eq? (product? '(* 2 3)) #t)
+; (eq? (product? '3) #f)
+
+; make-sum: ArithExp ArithExp -> ProductExp
+(define (make-product e1 e2) (list '* e1 e2))
+
+; (equal? (make-product 2 3) '(* 2 3))
+
+;; sums and products will use the same selectors
+
+
+
+
+
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp)
+         (if (variable=? exp var) 1 0))
+        ((sum? exp) 
+         (make-sum (deriv (arg1 exp) var) (deriv (arg2 exp) var)))
+        ((product? exp)
+         (make-sum (make-product (arg1 exp) (deriv (arg2 exp) var))
+                   (make-product (arg2 exp) (deriv (arg1 exp) var))))
+        ((expt? exp)
+         (make-product (arg2 exp) (make-expt (arg1 exp) (- (arg2 exp) 1))))
+        (else (error 'deriv "Unexpected Input, not an ArithExp"))))
+
+
+
+ (= (deriv 1 'x) 0)
+ (= (deriv 'y 'x) 0)
+ (= (deriv 'x 'x) 1)
+ (equal? (deriv (make-sum (make-product 'x 'x) (make-product (make-expt 'x 3) 5)) 'x) '(+ (+ (* x 1) (* x 1)) (+ (* (^ x 3) 0) (* 5 (* 3 (^ x 2))))))
+
+
+
