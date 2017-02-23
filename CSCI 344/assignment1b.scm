@@ -92,8 +92,18 @@
 ; (eq? (sum? '3) #f)
 
 ; make-sum: ArithExp ArithExp -> SumExp
-(define (make-sum e1 e2) (list '+ e1 e2))
-
+(define (make-sum e1 e2)
+  (cond
+    [(and (number? e1) (number? e2)) (+ e1 e2)]
+    [(eq? e1 0) e2]
+    [(eq? e2 0) e1]
+    [else (list '+ e1 e2)]))
+(display "Testing make-sum\n") 
+(equal? (make-sum 'x1 'x2) '(+ x1 x2))
+(equal? (make-sum 0 'x1) 'x1)
+(equal? (make-sum 'x1 0) 'x1)
+(eq? (make-sum 2 3) 5)
+(display "End of make-sum\n")
 ; (equal? (make-sum 2 3) '(+ 2 3))
 
 ;; a product is represented as a list with three elements: tag, e1, e2.
