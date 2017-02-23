@@ -1,3 +1,4 @@
+#lang scheme
 ;merge will merge two list
 (define merge
   (lambda (order1 order2)
@@ -35,29 +36,17 @@
       [(null? (cdr nums)) nums]
       [else (merge (merge-sort(even nums)) (merge-sort(odd nums)))])))
 
-(define (deriv exp var)
-  (cond ((number? exp) 0)
-        ((variable? exp)
-         (if (variable=? exp var) 1 0))
-        ((sum? exp) 
-         (make-sum (deriv (arg1 exp) var)
-                   (deriv (arg2 exp) var)))
-        ((product? exp)
-         (make-sum (make-product (arg1 exp) (deriv (arg2 exp) var))
-                   (make-product (arg2 exp) (deriv (arg1 exp) var))))
-        (else (error 'deriv "Unexpected Input, not an ArithExp"))))
+
 
   
 (odd '(1 2 3 4 5 6 7 8 9))
-(define make-expt
-  (lambda (e n)
-    (cons '^ (list e n))))
+
 
 ;(equal? (make-expt '(+ x 2) 2) '(^ (+ x 2) 2))
 ;(equal? (make-expt 'x 2) '(^ x 2))
 
 
-#lang scheme
+
 ;(define (make-expt e n) (list'^ e n))
 
 (define make-expt
@@ -146,6 +135,5 @@
  (= (deriv 'y 'x) 0)
  (= (deriv 'x 'x) 1)
  (equal? (deriv (make-sum (make-product 'x 'x) (make-product (make-expt 'x 3) 5)) 'x) '(+ (+ (* x 1) (* x 1)) (+ (* (^ x 3) 0) (* 5 (* 3 (^ x 2))))))
-
 
 
