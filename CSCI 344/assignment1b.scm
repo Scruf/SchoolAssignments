@@ -51,10 +51,19 @@
 
 (define make-expt
   (lambda (e n)
-    (cons '^ (list e n))))
+    (cond
+      [(and (number? e) (number? n)) (expt e n)]
+      [(or (eq? e 0) (eq? n 0)) 1]
+      [(eq? n 1) e]
+      [else (list '^ e n)])))
+(display "Testing make-expt\n")
+(equal? (make-expt '(+ x 2) 2) '(^ (+ x 2) 2))
+(equal? (make-expt 'x 2) '(^ x 2))
+(eq? (make-expt 2 4) 16)
+(eq? (make-expt 0 0) 1)
+(eq? (make-expt 'u 1) 'u)
+(display "End of make-expt testing\n")
 
-;(equal? (make-expt '(+ x 2) 2) '(^ (+ x 2) 2))
-;(equal? (make-expt 'x 2) '(^ x 2))
 
 (define (arg1 e) (car (cdr e)))
 
