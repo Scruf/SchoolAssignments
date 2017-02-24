@@ -1,4 +1,6 @@
 #lang scheme
+;Assignment 1.b
+;Author Egor Kozitski
 ;merge will merge two list
 (define merge
   (lambda (order1 order2)
@@ -7,18 +9,24 @@
       [(null? order2) order1]
       [(>= (car order1)(car order2))(cons (car order2)(merge order1 (cdr order2))) ]
       [else (cons (car order1)(merge (cdr order1) order2))])))
-
+(display "Testing merge sort\n")
+(equal? (merge '(1 3 5 7) '(2 4 6 8)) '(1 2 3 4 5 6 7 8))
+(equal? (merge '() '(1 2 3 4 5)) '(1 2 3 4 5))
+(display "End of merge sort\n")
 ;will sort two lists using merge sort
 
 ;will get even index numbers
+;helper function for merge-sort 
 (define even
   (lambda (xs)
     (cond
       [(null? xs) '()]
       [(null? (cdr xs)) (cons (car xs) '())]
       [else (cons (car xs)(even (cddr xs)))])))
-
-(even'(1 2 3 4 5 6 7 8 9))
+(display "Even helper test\n")
+(equal? (even '(1 2 3 4 6 7 8 9)) '(1 3 6 8))
+(equal? (even '(1 3 5 6 7)) '(1 5 7))
+(display "End of even helper test\n")
 ;will get odd index numbers
 (define odd
   (lambda (xs)
@@ -26,7 +34,11 @@
       [(null? xs) '()]
       [(null? (cdr xs))'()]
       [else (cons (cadr xs) (odd (cddr xs)))])))
-(odd '(1 2 3 4 5 6 7 8 9))
+
+(display "Start of odd index tests\n")
+(equal? (odd '(1 2 3 4 5 6 7 8 9)) '(2 4 6 8))
+(equal? (odd '(3 4 5 61 2 )) '(4 61))
+(display "End of odd index test\n")
 
 
 (define merge-sort
@@ -37,9 +49,12 @@
       [else (merge (merge-sort(even nums)) (merge-sort(odd nums)))])))
 
 
-
+(display "Testing merge-sort\n")
+(equal? (merge-sort '(1 4 2 6 4 2)) '(1 2 2 4 4 6))
+(equal? (merge-sort '(9 2 6 4 7 2)) '(2 2 4 6 7 9))
+(display "End of merge-sort test\n")
   
-(odd '(1 2 3 4 5 6 7 8 9))
+
 
 
 ;(equal? (make-expt '(+ x 2) 2) '(^ (+ x 2) 2))
@@ -167,5 +182,4 @@
  (= (deriv 'y 'x) 0)
  (= (deriv 'x 'x) 1)
  
-
 
