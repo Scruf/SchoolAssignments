@@ -1,6 +1,7 @@
 import sys
 import re
 """
+	@autho Egor Kozitski
 	Checks whether state in the right form
 """
 def state_match(state,reg):

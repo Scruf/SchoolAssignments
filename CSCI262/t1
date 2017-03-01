@@ -1,0 +1,19 @@
+# File: t1
+# This DFA accepts any string that starts with 'ab'
+# Q
+q0 q1 q2 q3
+# Sigma
+a b
+# s
+q0
+# F
+q2
+# delta
+q0 a q1
+q0 b q3
+q1 a q3
+q1 b q2
+q2 a q2
+q2 b q2
+q3 a q3
+q3 b q3

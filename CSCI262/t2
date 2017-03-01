@@ -1,0 +1,15 @@
+# File: t2
+# This DFA accepts only the empty string
+# Q
+q0 q1 
+# Sigma
+a b
+# s
+q0
+# F
+q0
+# delta
+q0 a q1
+q0 b q1
+q1 a q1
+q1 b q1

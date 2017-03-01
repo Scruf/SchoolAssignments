@@ -1,0 +1,21 @@
+# Checks for illegal transition due to alpha
+# this DFA recognizes any string of a's an b's having an even number
+# of a's and a even number of b's
+# Q - the set of states
+0 1 2 3
+# Sigma - the alphabet
+a b
+# q_0 - the start state
+0
+# F - the set of accept states
+0
+# delta - the transition function
+0 a 1
+0 c 2
+1 a 0
+1 b 3
+2 a 3
+2 b 0
+3 a 2
+3 b 1
+
