@@ -2,9 +2,11 @@
 (define union
   (lambda (set1 set2)
     (cond
+      [(null? set1) set2]
       [(null? set2) set1]
-      [(member (car set2) set1) (union set1 (cdr set2))]
-      [#t (union (cons (car set2) set1) (cdr set2))])))
+      [(not (equal? (member (car set1) set2) #f)) (union (cdr set1) set2)]
+      [else (cons (car set1) (union (cdr set1) set2))])))
+      
 (display "Testing Union\n")
 (equal? (union '() '()) '())
 (equal? (union '(2) '()) '(2))
@@ -51,3 +53,33 @@
 
 ; (terminal? ''+)
 ; (not (terminal? 'E))
+(define first3
+  (lambda (grammar alpha seen)
+    (cond
+      [(null? alpha) '()]
+      [else (cond
+               [(pair? (car alpha))
+                  (cond
+                    [(equal? (caar alpha) 'quote) (cdar alpha)]
+                    [else '()])]
+             [else (first-var3 grammar (filter (lambda (x) (equal? (car x) (car alpha))) grammar) seen)])])))
+                    
+
+
+
+
+
+
+
+    
+(define first-var3
+  (lambda (grammar rules seen)
+    (if (null? rules)
+        '()
+        (if (equal? (member (car rules) seen) #f)(union (first3 grammar (cadar rules) (cons seen (car rules))) (first-var3 grammar (cdr rules) (cons seen (car rules))))
+            (first-var3 grammar (cdr rules) seen)))))
+
+(define first-alpha
+  (lambda (grammar alpha)
+    (first3 grammar alpha '())))
+    
