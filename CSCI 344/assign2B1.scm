@@ -154,50 +154,146 @@
 
 (define sum?
   (lambda (xs)
-    (and (pair? xs) (eq? (car xs) '+))))
+    (and (pair? xs) (eq? (car xs) 'sum))))
 (display "Testing Part 1 \n")
 (display "Testing sum?\n")
-(eq? (sum? '(- 2 3)) #f)
-(eq? (sum? '(+ 2 4)) #t)
+(eq? (sum? '(sum 2 3)) #t)
+(eq? (sum? '(+ 2 4)) #f)
 (eq? (sum? '((()))) #f)
 (display "End of sum testing\n")
 (define difference?
   (lambda (xs)
-    (and (pair? xs) (eq? (car xs) '-))))
+    (and (pair? xs) (eq? (car xs) 'diff))))
 (display "\nTesting difference\n")
-(eq? (difference? '(- 2 3)) #t)
+(eq? (difference? '(diff 2 3)) #t)
 (eq? (difference? '(()) ) #f)
 (eq? (difference? '(+ 2 4)) #f)
 (display "End of difference testing\n")
 (define product?
   (lambda (xs)
-    (and (pair? xs) (eq? (car xs) '*))))
+    (and (pair? xs) (eq? (car xs) 'prod))))
 (display "\nTesting product\n")
 (eq? (product? '(())) #f)
-(eq? (product? '(* 2 3)) #t)
+(eq? (product? '(prod 2 3)) #t)
 (eq? (product? '(+ 2 3)) #f)
 (display "End of product testing\n")
 (define quotient?
   (lambda (xs)
-    (and (pair? xs) (eq? (car xs) '/))))
-(display "\nTesting quotient\n")
-(eq? (quotient? '(/ 2 3)) #t)
+    (and (pair? xs) (eq? (car xs) 'quo))))
+(display "\nTesting quotient\n");; Author: Arthur Nunes-Harwitt
+2
+​
+3
+;; Import the parser and lexer generators.
+4
+​
+5
+​
+6
+(require (lib "yacc.ss" "parser-tools")
+7
+         (lib "lex.ss" "parser-tools")
+8
+         (prefix : (lib "lex-sre.ss" "parser-tools")))
+9
+​
+10
+(require (lib "pretty.ss"))
+11
+​
+12
+(define-tokens value-tokens (NUM ID))
+13
+​
+14
+(define-empty-tokens op-tokens
+15
+  (OP 
+16
+   CP
+17
+   COMMA
+18
+   EQ1
+19
+   LET 
+20
+   IN 
+21
+   + 
+22
+   - 
+23
+   * 
+24
+   /
+25
+   EOF))
+26
+​
+27
+(define-lex-abbrevs
+28
+ (lower-letter (:/ "a" "z"))
+29
+ (upper-letter (:/ "A" "Z"))
+30
+ (letter (:or lower-letter upper-letter))
+31
+ (digit (:/ "0" "9"))
+32
+ (ident (:+ letter))
+33
+ (number (:+ digit)))
+34
+​
+35
+​
+36
+​
+37
+;get-token: inputPort -> token
+38
+(define get-token
+39
+  (lexer
+40
+   ((eof) 'EOF)
+41
+   ("let" 'LET)
+42
+   ("in" 'IN)
+43
+   ("(" 'OP)
+44
+   (")" 'CP)
+45
+   ("," 'COMMA)
+46
+   ("=" 'EQ1)
+47
+   ("+" '+)
+48
+   ("-" '-)
+49
+   ("*" '*)
+(eq? (quotient? '(quo 2 3)) #t)
 (eq? (quotient? '(())) #f)
 (eq? (quotient? '(+ 2 3)) #f)
 (display "End of quotient testing\n")
 (define negate?
   (lambda (xs)
-    (and (pair? xs) (eq? (car xs) '-))))
+    (and (pair? xs) (eq? (car xs) 'neg))))
 (display "\nTesting Negate\n")
-(eq? (negate? '(- 2)) #t)
+(eq? (negate? '(neg 2)) #t)
 (eq? (negate? '(+ 2)) #f)
 (eq? (negate? '(())) #f)
 (display "End of negate test\n")
 (define let?
   (lambda (xs)
-    (and (pair? xs) (eq? (car xs) '-))))
+    (and (pair? xs) (eq? (car xs) 'with-bindings))))
 (display "\nTesting let?\n")
-(eq? (let? '(- 2)) #t)
+(eq? (let? '(with-bindings 2 3)) #t)
 (eq? (let? '(())) #f)
 (eq? (let? '(+ 2 3)) #f)
 (display "End of let testing\n")
@@ -241,3 +337,87 @@
 (= (neg-exp (make-neg 3 )) 3)
 (= (neg-exp (make-neg 5)) 5)
 (display "\nEnd of let-dfs\n")
+;; A large language expression (LargeLangExp) is one of the following.
+;; a number n
+;; an identifier x
+;; a sum with parts e1 and e2 are small language expression
+;;   where e1 and e2 are small language expressions
+;; a difference with parts e1 and e2,
+;;   where e1 and e2 are small language expressions
+;; a product with parts e1 and e2,;
+;;   where e1 and e2 are small language expressions
+;; a quotient with parts e1 and e2,
+;;   where e1 and e2 are small language expressions
+;; a negation with part e,
+;;   where e is an small language expression
+;; a bindings with parts defs and e,
+;;   where defs is a list of identifiers * SmallLangExp
+;; and e is an small language expression
+;; functions are  predicate, constructor, selectors.
+;; Identifier is Scheme symbol is a Scheme number
+;; Number is  Scheme number
+(define program?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'program))))
+(display "\nTesting program\n")
+(display "\nEnd of program testing\n")
+(define class-decl?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'class))))
+(display "\nTesting class-decl\n")
+(display "\nEnd of class-decl testing\n")
+(define method?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'method))))
+(display "\nTesting method\n")
+(display "\nEnd of method testing\n")
+(define new?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'new))))
+(display "\nTesting new \n")
+(display "\nEnd of new testig\n")
+(define supercall?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'super))))
+(display "\nTesting supercall\n"
+(display "\nEnd of supercall\n")
+(define seq?
+  (lambda (xs)
+    (and (pari? xs) (equal? (car xs) 'sequence))))
+(display "\nTesting seq\n")
+(display "\nEnd of seq testing\n")
+(define procs?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'procedure))))
+(display "\nTesting procs\n")
+(display "\nEnd of procs testing\n")
+(define if?
+  (lambda (xs)
+    (and (pair? xs) (equal (car xs) 'if))))
+(display "\nTesting if? \n")
+(display "\nEnd of if testing\n")
+(define assign?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'assign!))))
+(display "\nTesting assign\n")
+(display "\nEnd of assign\n")
+(define equality?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'equality?))))
+(display "\nTesting equal\n")
+(display "\nEnd of equal\n")
+(define proc?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'proc))))
+(display "\nTesting proc?\n")
+(display "\nEnd of proc testing\n")
+(define access?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'send))))
+(display "\nTesting access\n")
+(display "\nEnd of access\n")
+(define funcall?
+  (lambda (xs)
+    (and (pair? xs) (equal? (car xs) 'funcall))))
+(display "\nTesting funcall\n")
+(display "\nEnd of funcall testing\n")
