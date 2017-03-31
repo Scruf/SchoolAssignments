@@ -390,3 +390,138 @@
     (list 'funcall ex1 ex2)))
 (display "\nTesting make-funcall\n")
 (display "\nEnd of make-funcall testing\n")
+(define program-decls
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting program-decls\n")
+(display "\nEnd of program-decls\n")
+(define program-exp
+  (lambda (xs)
+    (caddr xs)))
+(display "\nTesting program-exp\n")
+(display "\nEnd of program-exp\n")
+(define class-name
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting class-name\n")
+(display "\nEnd of class-name testing\n")
+(define class-parent
+  (lambda (xs)
+    (caddr xs)))
+(display "\nTesting class-parent\n")
+(display "\nEnd of class-parent testing\n")
+(define class-fields
+  (lambda (xs)
+    (cadddr xs)))
+(display "\nTesting class fields\n")
+(display "\nEnd of class fields\n")
+(define class-methods
+  (lambda (xs)
+    (caddddr xs)))
+(display "\nTesting class-methods\n")
+(display "\nEnd of class methods testing\n")
+(define method-name
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting method-name\n")
+(display "\nEnd of method-name testing\n")
+(define method-formals
+  (lambda (xs)
+    (caddr xs)))
+(display "\nTesting method-formals\n")
+(display "\nEnd of method-formals testing\n")
+(define method-exp
+  (lambda (xs)
+    (cadddr xs)))
+(display "\nTesting method-exp\n")
+(display "\nEnd of method-exp\n")
+(define new-name
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting new-name\n")
+(display "\nEnd of new-name\n")
+(define new-rands
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting new-rands\n")
+(display "\nEnd of new-rands\n")
+(define supercall-name
+  (lambda (xs)
+    (caddr xs)))
+(display "\nTesting supercall-name\n")
+(display "\nEnd of supercall-name\n")
+(define supercall-rands
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting supercall-rands\n")
+(display "\nEnd of supercall-rands\n")
+(define seq-exps
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting seq-exps\n")
+(display "\nEnd of seq-exps\n")
+(define procs-def
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting procs-def\n")
+(display "\nEnd of prcs-def testing\n")
+(define procs-exp
+  (lambda (xs)
+    (caddr xs)))
+(display "\nTesting procs-expp\n")
+(display "\nEnd of procs-exp testing\n")
+(define if-exp1
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting if-exp1\n")
+(display "\nEnd of if-exp1 testing\n")
+(define if-exp2
+  (lambda (xs)
+    (caddr (xs))))
+(display "\nTesting if-exp2\n")
+(display "\nEnd of if-exp2 testing\n")
+(define if-exp3
+  (lambda (xs)
+    (cadddr xs)))
+(display "\nTesting if-exp3\n")
+(display "\nEnd of if-exp3 testing\n")
+(define assign-var
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting assign-var\n")
+(display "\nEnd of assign-var testing\n")
+(define assign-exp
+  (lambda (xs)
+    (caddr xs)))
+(display "\nTesting assign-exp\n")
+(display "\nEnd of assign-exp testing\n")
+(define proc-formals
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting proc-formals\n")
+(display "\nEnd of proc-formals\n")
+(define proc-exp
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting proc-exp\n")
+(display "\nEnd of proc-exp\n")
+(define access-exp
+  (lambda (xs)
+    (caddr xs)))
+(display "\nTesting access-exp\n")
+(display "\nEnd of access-exp\n")
+(define access-message
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting access-message\n")
+(display "\nEnd of access-message\n")
+(define funcall-rator
+  (lambda (xs)
+    (cadr xs)))
+(display "\nTesting funcall-rator\n")
+(display "\nEnd of funcall-rator testing\n")
+(define funcall-rands
+  (lambda (xs)
+    (caddr xs)))
+(display "\nTesting funcall-rands\n")
+(display "\nEnd of funcall-rands\n")
