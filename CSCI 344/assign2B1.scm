@@ -180,103 +180,7 @@
 (define quotient?
   (lambda (xs)
     (and (pair? xs) (eq? (car xs) 'quo))))
-(display "\nTesting quotient\n");; Author: Arthur Nunes-Harwitt
-2
-​
-3
-;; Import the parser and lexer generators.
-4
-​
-5
-​
-6
-(require (lib "yacc.ss" "parser-tools")
-7
-         (lib "lex.ss" "parser-tools")
-8
-         (prefix : (lib "lex-sre.ss" "parser-tools")))
-9
-​
-10
-(require (lib "pretty.ss"))
-11
-​
-12
-(define-tokens value-tokens (NUM ID))
-13
-​
-14
-(define-empty-tokens op-tokens
-15
-  (OP 
-16
-   CP
-17
-   COMMA
-18
-   EQ1
-19
-   LET 
-20
-   IN 
-21
-   + 
-22
-   - 
-23
-   * 
-24
-   /
-25
-   EOF))
-26
-​
-27
-(define-lex-abbrevs
-28
- (lower-letter (:/ "a" "z"))
-29
- (upper-letter (:/ "A" "Z"))
-30
- (letter (:or lower-letter upper-letter))
-31
- (digit (:/ "0" "9"))
-32
- (ident (:+ letter))
-33
- (number (:+ digit)))
-34
-​
-35
-​
-36
-​
-37
-;get-token: inputPort -> token
-38
-(define get-token
-39
-  (lexer
-40
-   ((eof) 'EOF)
-41
-   ("let" 'LET)
-42
-   ("in" 'IN)
-43
-   ("(" 'OP)
-44
-   (")" 'CP)
-45
-   ("," 'COMMA)
-46
-   ("=" 'EQ1)
-47
-   ("+" '+)
-48
-   ("-" '-)
-49
-   ("*" '*)
+(display "\nTesting quotient\n")
 (eq? (quotient? '(quo 2 3)) #t)
 (eq? (quotient? '(())) #f)
 (eq? (quotient? '(+ 2 3)) #f)
@@ -358,66 +262,131 @@
 ;; Number is  Scheme number
 (define program?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'program))))
+    (and (pair? xs) (equal? (arg1 xs) 'program))))
 (display "\nTesting program\n")
 (display "\nEnd of program testing\n")
 (define class-decl?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'class))))
+    (and (pair? xs) (equal? (arg1 xs) 'class))))
 (display "\nTesting class-decl\n")
 (display "\nEnd of class-decl testing\n")
 (define method?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'method))))
+    (and (pair? xs) (equal? (arg1 xs) 'method))))
 (display "\nTesting method\n")
 (display "\nEnd of method testing\n")
 (define new?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'new))))
+    (and (pair? xs) (equal? (arg1 xs) 'new))))
 (display "\nTesting new \n")
 (display "\nEnd of new testig\n")
 (define supercall?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'super))))
-(display "\nTesting supercall\n"
+    (and (pair? xs) (equal? (arg1 xs) 'super))))
+(display "\nTesting supercall\n")
 (display "\nEnd of supercall\n")
 (define seq?
   (lambda (xs)
-    (and (pari? xs) (equal? (car xs) 'sequence))))
+    (and (pari? xs) (equal? (arg1 xs) 'sequence))))
 (display "\nTesting seq\n")
 (display "\nEnd of seq testing\n")
 (define procs?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'procedure))))
+    (and (pair? xs) (equal? (arg1 xs) 'procedures))))
 (display "\nTesting procs\n")
 (display "\nEnd of procs testing\n")
 (define if?
   (lambda (xs)
-    (and (pair? xs) (equal (car xs) 'if))))
+    (and (pair? xs) (equal (arg1 xs) 'if))))
 (display "\nTesting if? \n")
 (display "\nEnd of if testing\n")
 (define assign?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'assign!))))
+    (and (pair? xs) (equal? (arg1 xs) 'assign!))))
 (display "\nTesting assign\n")
 (display "\nEnd of assign\n")
 (define equality?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'equality?))))
+    (and (pair? xs) (equal? (arg1 xs) 'equality?))))
 (display "\nTesting equal\n")
 (display "\nEnd of equal\n")
 (define proc?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'proc))))
+    (and (pair? xs) (equal? (arg1 xs) 'proc))))
 (display "\nTesting proc?\n")
 (display "\nEnd of proc testing\n")
 (define access?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'send))))
+    (and (pair? xs) (equal? (arg1 xs) 'send))))
 (display "\nTesting access\n")
 (display "\nEnd of access\n")
 (define funcall?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'funcall))))
+    (and (pair? xs) (equal? (carg1 xs) 'funcall))))
 (display "\nTesting funcall\n")
 (display "\nEnd of funcall testing\n")
+(define make-program
+  (lambda (ex1 ex2)
+    (list 'program ex1 ex2)))
+(display "\nTesting make-program\n")
+(display "\nEnd of make-program\n")
+(define make-class
+  (lambda (ex1 ex2 ex3 ex4)
+    (list 'class ex1 ex2 ex3 ex4)))
+(display "\nTesting make-class\n")
+(display "\nEnd of make-class testing\n")
+(define make-method
+  (lambda (ex1 ex2)
+    (list 'method ex1 ex2)))
+(display "\nTesting make-method\n")
+(display "\nEnd of make-method\n")
+(define make-new
+  (lambda (ex1 ex2)
+     (list 'new ex1 ex2)))
+(display "\nTesting make-new\n")
+(display "\nEnd of make-new testing\n")
+(define make-supercall
+  (lambda (ex1 ex2)
+    (list 'super ex1 ex2)))
+(display "\nTesting make-supercall\n")
+(display "\nEnd of make-supercall\n")
+(define make-seq
+  (lambda (ex1)
+    (list 'sequence ex1)))
+(display "\nTesting make-seq\n")
+(display "\nEnd of make-seq\n")
+(define make-procs
+  (lambda (ex1 ex2)
+    (list 'procedures ex1 ex2)))
+(display "\nTesting make-procs\n")
+(display "\nEnd of make-procs\n")
+(define make-if
+  (lambda (ex1 ex2 ex3)
+    (list 'if ex1 ex2 ex3)))
+(display "\nTesting make-if\n")
+(display "End if make-if testing\n")
+(define make-assign
+  (lambda (ex1 ex2)
+    (list 'assign! ex1 ex2)))
+(display "\nTesting make-assign\n")
+(display "\nEnd of make-assing testing\n")
+(define make-equal
+  (lambda (ex1 ex2)
+    (list 'equality? ex1 ex2)))
+(display "\nTesting make-equal\n")
+(display "\nEnd of make-equal\n")
+(define make-proc
+  (lambda (ex1 ex2)
+    (list 'proc ex1 ex2)))
+(display "\nTesting make-proc\n")
+(display "\nEnd of make-proc\n")
+(define make-access
+  (lambda (ex1 ex2)
+    (list 'send ex1 ex2)))
+(display "\nTesting make-access\n")
+(display "\nEnd of make-access\n")
+(define make-funcall
+  (lambda (ex1 ex2)
+    (list 'funcall ex1 ex2)))
+(display "\nTesting make-funcall\n")
+(display "\nEnd of make-funcall testing\n")
