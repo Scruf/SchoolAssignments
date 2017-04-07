@@ -23,24 +23,24 @@
    * 
    /
    EOF
-   class
-   extends
-   OB
-   CB
-   method
-   procs
-   if
-   then
-   else
-   Slash
-   left
-   new
-   super
-   EQ2
-   num
+   NUMBER
    SC
-   period
-   field))
+   PERIOD
+   CLASS
+   ELSE
+   BACKSLASH
+   ARROW
+   NEW
+   SUPER
+   EXTENDS
+   OBC
+   CBC
+   METHOD
+   PROCEDURE
+   IF
+   THEN
+   COMP
+   FIELD))
 
 
 (define-lex-abbrevs
@@ -59,6 +59,7 @@
   
 
 ;get-token: inputPort -> token
+;get-token: inputPort -> token
 (define get-token
   (lexer
    ((eof) 'EOF)
@@ -72,24 +73,24 @@
    ("-" '-)
    ("*" '*)
    ("/" '/)
-   ("class" 'class)
-   ("extends" 'extends)
-   ("{" 'OB)
-   ("}" 'CB)
-   ("method" 'method)
-   ("procedures" 'procs)
-   ("if" 'if)
-   ("then" 'then)
-   ("else" 'else)
-   ("\\" 'Slash)
-   ("->" 'left)
-   ("new" 'new)
-   ("super" 'super)
-   ("==" 'EQ2)
-   ("number" 'num)
+   ("procedures" 'PROCEDURE)
+   ("if" 'IF)
+   ("then" 'THEN)
+   ("else" 'ELSE)
+   ("class" 'CLASS)
+   ("extends" 'EXTENDS)
+   ("{" 'OBC)
+   ("}" 'CBC)
+   ("method" 'METHOD)
+   ("\\" 'BACKSLASH)
+   ("->" 'ARROW)
+   ("number" 'NUMBER)
    (";" 'SC)
-   ("." 'period)
-   ("field" 'field)
+   ("." 'PERIOD)
+   ("new" 'NEW)
+   ("super" 'SUPER)
+   ("==" 'COMP)
+   ("field" 'FIELD)
    (number (token-NUM (string->number lexeme)))
    (ident (token-ID (string->symbol lexeme)))
    (whitespace (get-token input-port))))
@@ -121,40 +122,23 @@
 ;; Identifier is a Scheme symbol
 
 ; make-sum: SmallLangExp * SmallLangExp -> SumExp
-(define (make-sum exp1 exp2)
-  (list 'sum exp1 exp2))
+(define (make-sum xs ys)
+  (list 'sum xs ys))
 
-; (equal? (make-sum 2 3) '(sum 2 3))
+(define (make-diff xs ys)
+  (list 'diff xs ys))
 
+(define (make-prod xs ys)
+  (list 'prod xs ys))
 
-; make-diff: SmallLangExp * SmallLangExp -> DiffExp
-(define (make-diff exp1 exp2)
-  (list 'diff exp1 exp2))
+(define (make-quo xs ys)
+  (list 'quo xs ys))
 
-; (equal? (make-diff 2 3) '(diff 2 3))
+(define (make-neg xs)
+  (list 'neg xs))
 
-
-; make-prod: SmallLangExp * SmallLangExp -> ProdExp
-(define (make-prod exp1 exp2)
-  (list 'prod exp1 exp2))
-
-; (equal? (make-prod 2 3) '(prod 2 3))
-
-; make-quo: SmallLangExp * SmallLangExp -> QuoExp
-(define (make-quo exp1 exp2)
-  (list 'quo exp1 exp2))
-
-; (equal? (make-quo 2 3) '(quo 2 3))
-
-; make-neg: SmallLangExp -> NegExp
-(define (make-neg exp)
-  (list 'neg exp))
-
-; (equal? (make-neg 2) '(neg 2))
-
-(define (make-let defs exp)
-  (list 'with-bindings defs exp))
-; (equal? (make-let (list (list 'x 1) (list 'y 2)) 3) '(with-bindings ((x 1) (y 2)) 3))
+(define (make-let xs ys)
+  (list 'with-bindings xs ys))
 
 ; parse-small-lang: (() -> token) -> SmallLangExp
 
@@ -726,36 +710,31 @@
    (tokens value-tokens op-tokens)
    (error (lambda (a b c) (error 'parse-small-lang "error occurred, ~v ~v ~v" a b c)))
    (grammar
-          (program ((classdecls expr) (make-program $1 $2)))
-    (classdecls (() null)
-                ((classdecl classdecls) (cons $1 $2)))
-    (classdecl ((class ID extends ID OB fielddecls methdecls CB) (make-class $2 $4 $6 $7)))
-    (fielddecls (() null)
-                ((field ID fielddecls) (cons $2 $3)))
-    (methdecls (() null)
-               ((method ID OP formals CP expr  methdecls) (cons (make-method $2 $4 $6) $7)))
-    (expr ((LET letdefs IN expr) (make-let $2 $4))
-          ((procs procdefs IN expr) (make-procs $2 $4))
-          (( OB exprs CB ) (make-seq $2))
-          (( if expr then expr else expr) (make-if $2 $4 $6))
-          ((Slash formals Slash left expr) (make-proc $2 $5))
-          (( new ID OP actuals CP) (make-new $2 $4))
-          (( super ID OP actuals CP) (make-supercall $2 $4))
-          (( ID EQ1 expr) (make-assign $1 $3))
-          (( compexpr ) $1))
-    (letdefs ((letdef) (list $1))
-             ((letdef COMMA letdefs) (cons $1 $3)))
-    (letdef ((ID EQ1 expr) (list $1 $3)))
-    (procdefs ((procdef) (list $1))
-              ((procdef COMMA procdefs) (cons $1 $3)))
-    (procdef (( ID OP formals CP EQ1 expr) (list $1 (make-proc $3 $6))))
-    (exprs ((expr) (list $1))
-           ((expr SC exprs) (cons $1 $3)))
-    (compexpr ((mathpexpr EQ2 mathpexpr) (make-equal $1 $3))
-              ((mathpexpr) $1))
-    (mathpexpr ((mathpexpr + term) (make-sum $1 $3))
-               ((mathpexpr - term) (make-diff $1 $3))
+        
+    (let-def ((ID EQ1 expression) (list $1 $3)))
+    (let-defs ((let-def) (list $1))
+             ((let-def COMMA let-defs) (cons $1 $3)))
+    (proc-def (( ID OP formals CP EQ1 expression) (list $1 (make-proc $3 $6))))
+    (proc-defs ((proc-def) (list $1))
+              ((proc-def COMMA proc-defs) (cons $1 $3)))
+   
+    (exprsions ((expression) (list $1))
+           ((expression SC exprsions) (cons $1 $3)))
+    (expression ((LET let-defs IN expression) (make-let $2 $4))
+          ((PROCEDURE proc-defs IN expression) (make-procs $2 $4))
+          (( OBC exprsions CBC ) (make-seq $2))
+          (( IF expression THEN expression ELSE expression) (make-if $2 $4 $6))
+          ((BACKSLASH formals BACKSLASH ARROW expression) (make-proc $2 $5))
+          (( NEW ID OP actuals CP) (make-new $2 $4))
+          (( SUPER ID OP actuals CP) (make-supercall $2 $4))
+          (( ID EQ1 expression) (make-assign $1 $3))
+          (( comp-expression ) $1))
+    (comp-expression ((math-expression COMP math-expression) (make-equal $1 $3))
+              ((math-expression) $1))
+    (math-expression ((math-expression + term) (make-sum $1 $3))
+               ((math-expression - term) (make-diff $1 $3))
                ((term) $1))
+   
     (term (( term * factor) (make-prod $1 $3))
           (( term / factor) (make-quo $1 $3))
           (( factor) $1))
@@ -763,19 +742,30 @@
             ((NUM) $1)
             ((- factor) (make-neg $2)))
     (simple ((ID) $1)
-            ((simple period ID) (make-access $1 $3))
+            ((simple PERIOD ID) (make-access $1 $3))
             ((simple OP actuals CP) (make-funcall $1 $3))
-            ((OP expr CP) $2))
+            ((OP expression CP) $2))
     (actuals (() null)
              ((nonemptyactuals) $1))
-    (nonemptyactuals ((expr) (list $1))
-                     ((expr COMMA nonemptyactuals) (cons $1 $3)))
+    (nonemptyactuals ((expression) (list $1))
+                     ((expression COMMA nonemptyactuals) (cons $1 $3)))
     (formals (() null)
              ((nonemptyformals) $1))
     (nonemptyformals (( ID) (list $1))
                      (( ID COMMA nonemptyformals) (cons $1 $3)))
+    (program ((class-declarationss expression) (make-program $1 $2)))
+    (class-declaration ((CLASS ID EXTENDS ID OBC fielddecls methdecls CBC) (make-class $2 $4 $6 $7)))
+    (class-declarationss (() null)
+                ((class-declaration class-declarationss) (cons $1 $2)))
+   
+    (fielddecls (() null)
+                ((FIELD ID fielddecls) (cons $2 $3)))
+    (methdecls (() null)
+               ((METHOD ID OP formals CP expression  methdecls) (cons (make-method $2 $4 $6) $7)))
     )))
-
+(let* ((example "let x = 2 + 2 * 2, y = 0 in -2+3/x+y")
+       (i (open-input-string example))) ; convert string to inputPort
+  (parse-lang (lambda () (get-token i))))
 
 (let* ((example "let x = -(1+1) + 3 * 4, y = 0 in {y = 14; x == y}")
        (i (open-input-string example)))
@@ -801,25 +791,7 @@
              ((pred (proc (k) (diff k 1))))
              (procedures
               ((f
-                (proc(let* ((example 
-"let pred = \\k\\->k-1 
-  in procedures f(n) = if n == 0
-                       then 1 
-                       else n * f(pred(n)) 
-      in f(4+1)
-")
-       (i (open-input-string example)))
-  (equal? (parse-lang (lambda () (get-token i)))
-          '(program
-            ()
-            (with-bindings
-             ((pred (proc (k) (diff k 1))))
-             (procedures
-              ((f
                 (proc
-                 (n)
-                 (if (equality? n 0) 1 (prod n (funcall f (funcall pred n)))))))
-              (funcall f (sum 4 1)))))))
                  (n)
                  (if (equality? n 0) 1 (prod n (funcall f (funcall pred n)))))))
               (funcall f (sum 4 1)))))))
@@ -857,5 +829,3 @@ let ob = new point(2+3, 1+4*7) in
             (with-bindings
              ((ob (new point (sum 2 3) (sum 1 (prod 4 7)))))
              (funcall (send ob move) 0.1 3)))))
-                              
-               
