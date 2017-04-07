@@ -1,5 +1,5 @@
 ;; Author: Arthur Nunes-Harwitt
-
+;; @author Egor Kozitski
 ;; Import the parser and lexer generators.
 
 
@@ -22,18 +22,43 @@
    - 
    * 
    /
-   EOF))
+   EOF
+   CLASS
+   EXTENDS
+   OBC
+   CBC
+   METHOD
+   PROCEDURE
+   IF
+   THEN
+   ELSE
+   BACKSLASH
+   ARROW
+   NEW
+   SUPER
+   COMP
+   NUMBER
+   SC
+   PERIOD
+   FIELD))
+
 
 (define-lex-abbrevs
- (lower-letter (:/ "a" "z"))
- (upper-letter (:/ "A" "Z"))
- (letter (:or lower-letter upper-letter))
- (digit (:/ "0" "9"))
- (ident (:+ letter))
- (number (:+ digit)))
+  (lower-letter (:/ "a" "z"))
+  (upper-letter (:/ "A" "Z"))
+  (letter (:or lower-letter upper-letter))
+  (digit (:/ "0" "9"))
+  (idfirst (:or (:or letter "_") "$"))
+  (idrest (:or idfirst digit))
+  (ident (:: idfirst (:* idrest)))
+  (digits (:+ digit))
+  (number (:: (:: digits(:?(:: "." digits)))
+              (:?(::(::(:or "E" "e")(:? (:or "+" "-"))
+                       digits))))))
 
+  
 
-
+;get-token: inputPort -> token
 ;get-token: inputPort -> token
 (define get-token
   (lexer
@@ -48,10 +73,27 @@
    ("-" '-)
    ("*" '*)
    ("/" '/)
+   ("class" 'CLASS)
+   ("extends" 'EXTENDS)
+   ("{" 'OBC)
+   ("}" 'CBC)
+   ("method" 'METHOD)
+   ("procedures" 'PROCEDURE)
+   ("if" 'IF)
+   ("then" 'THEN)
+   ("else" 'ELSE)
+   ("\\" 'BACKSLASH)
+   ("->" 'ARROW)
+   ("new" 'NEW)
+   ("super" 'SUPER)
+   ("==" 'COMP)
+   ("number" 'NUMBER)
+   (";" 'SC)
+   ("." 'PERIOD)
+   ("field" 'FIELD)
    (number (token-NUM (string->number lexeme)))
    (ident (token-ID (string->symbol lexeme)))
    (whitespace (get-token input-port))))
-
 
 
 ;;; data definitions
@@ -111,15 +153,12 @@
 
 ; (equal? (make-neg 2) '(neg 2))
 
-; make-let: Listof(Identifier*SmallLangExp) * SmallLangExp -> BindingExp
-; Identifier*SmallLangExp is represented as a two element list
 (define (make-let defs exp)
   (list 'with-bindings defs exp))
-
 ; (equal? (make-let (list (list 'x 1) (list 'y 2)) 3) '(with-bindings ((x 1) (y 2)) 3))
 
 ; parse-small-lang: (() -> token) -> SmallLangExp
-(define-lex
+
 (define parse-small-lang
   (parser
    (start exp)
@@ -144,6 +183,7 @@
             ((OP exp CP) $2)))))
 
 
+
 ; lexer/parser test
 (let* ((example "let x = -2 + 3 * 4, y = 0 in -2+5*x+y")
        (i (open-input-string example))) ; convert string to inputPort
@@ -151,7 +191,6 @@
           '(with-bindings ((x (sum (neg 2) (prod 3 4)))
                            (y 0))
              (sum (sum (neg 2) (prod 5 x)) y))))
-
 
 (define sum?
   (lambda (xs)
@@ -203,8 +242,8 @@
 (eq? (let? '(+ 2 3)) #f)
 (display "End of let testing\n")
 (define arg1
-  (lambda (ex)
-    (cadr ex)))
+  (lambda (xs)
+    (car (cdr xs))))
 (display "\nTesting arg1\n")
 (= (arg1 (make-sum 4 5)) 4)
 (= (arg1 (make-sum 3 5)) 3)
@@ -212,7 +251,7 @@
 (display "\nEnd of arg1 testing")
 (define arg2
   (lambda (xs)
-    (caddr xs)))
+    (car (cdr (cdr xs)))))
 (display "\nTestig arg2\n")
 (= (arg2 (make-sum 3 4)) 4)
 (= (arg2 (make-sum 5 6)) 6)
@@ -220,7 +259,7 @@
 (display "\nEnd of arg2 testing\n")
 (define neg-exp
   (lambda (xs)
-    (cadr xs)))
+    (arg1 xs)))
 (display "\nTesting neg-exp\n")
 (= (neg-exp (make-neg 4)) 4)
 (= (neg-exp (make-neg 3 )) 3)
@@ -228,7 +267,7 @@
 (display "End of neg-exp testing\n")
 (define let-exp
   (lambda (xs)
-    (caddr xs)))
+    (arg2 xs)))
 (display "\nTesting let-exp\n")
 (= (let-exp (make-sum 3 4)) 4)
 (= (let-exp (make-sum 5 6)) 6)
@@ -236,7 +275,7 @@
 (display "End of let-exp testing\n")
 (define let-dfs
   (lambda (xs)
-    (cadr xs)))
+    (arg1 xs)))
 (display "\nTesting let-dfs\n")
 (= (neg-exp (make-neg 4)) 4)
 (= (neg-exp (make-neg 3 )) 3)
@@ -264,13 +303,13 @@
 (display "\nTesting make-method\n")
 (equal? (make-method 1 2 3) '(method 1 2 3))
 (equal? (make-method 'a 'b 'c) '(method a b c))
-(equal? (make-method '() '() '()) '(method () () ())
+(equal? (make-method '() '() '()) '(method () () ()))
 (display "\nEnd of make-access\n")
-(define make-funcall)
+
 (display "\nEnd of make-method\n")
 (define make-new
   (lambda (ex1 ex2)
-     (list 'new ex1 ex2)))
+     (cons 'new (cons ex1 ex2))))
 (display "\nTesting make-new\n")
 (equal? (make-new 1 2) '(new 1 2))
 (equal? (make-new 'a 'b) '(new a b))
@@ -286,7 +325,7 @@
 (display "\nEnd of make-supercall\n")
 (define make-seq
   (lambda (ex1)
-    (list 'sequence ex1)))
+    (cons 'sequence ex1)))
 (display "\nTesting make-seq\n")
 (equal? (make-seq 1) '(sequence 1))
 (equal? (make-seq 'a) '(sequence a))
@@ -294,7 +333,7 @@
 (display "\nEnd of make-seq\n")
 (define make-procs
   (lambda (ex1 ex2)
-    (list 'procedures ex1 ex2)))
+   (list 'procedures ex1 ex2)))
 (display "\nTesting make-procs\n")
 (equal? (make-procs 1 2) '(procedures 1 2))
 (equal? (make-procs 'a 'b) '(procedures a b))
@@ -314,14 +353,14 @@
 (display "\nTesting make-assign\n")
 (equal? (make-assign 1 2) '(assign! 1 2))
 (equal? (make-assign 'a 'b) '(assign! a b))
-(equal? (make-assign '() '()) '(assign () ()))
+(equal? (make-assign '() '()) '(assign! () ()))
 (display "\nEnd of make-assing testing\n")
 (define make-equal
   (lambda (ex1 ex2)
     (list 'equality? ex1 ex2)))
 (display "\nTesting make-equal\n")
 (equal? (make-equal 1 2) '(equality? 1 2))
-(equal? (make-equal 'a 'b) '(equalty? a b))
+(equal? (make-equal 'a 'b) '(equality? a b))
 (equal? (make-equal '() '()) '(equality? () ()))
 (display "\nEnd of make-equal\n")
 (define make-proc
@@ -340,9 +379,8 @@
 (equal? (make-access 'a 'b) '(send a b))
 (equal? (make-access '() '()) '(send () ()))
 (display "\nEnd of make-access\n")
-(define make-funcall
-  (lambda (ex1 ex2)
-    (list 'funcall ex1 ex2)))
+(define (make-funcall rator rands)
+  (cons 'funcall (cons rator rands)))
 (display "\nTesting make-funcall\n")
 (equal? (make-funcall 1 2) '(funcall 1 2))
 (equal? (make-funcall 'a 'b) '(funcall a b))
@@ -369,7 +407,7 @@
 ;; Number is  Scheme number
 (define program?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'program))))
+    (and (pair? xs) (eq? (car xs) 'program))))
 (display "\nTesting program\n")
 (equal? (program? (make-program 3 4)) #t)
 (equal? (program? (make-program '() '())) #t)
@@ -377,7 +415,7 @@
 (display "\nEnd of program testing\n")
 (define class-decl?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'class))))
+    (and (pair? xs) (eq? (car xs) 'class))))
 (display "\nTesting class-decl\n")
 (equal? (class-decl? (make-class 1 2 4 6)) #t)
 (equal? (class-decl? (make-class 'a 'b 'c 'd)) #t)
@@ -385,7 +423,7 @@
 (display "\nEnd of class-decl testing\n")
 (define method?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'method))))
+    (and (pair? xs) (eq? (car xs) 'method))))
 (display "\nTesting method\n")
 (equal? (method? (make-method 1 5 7)) #t)
 (equal? (method? (make-method 'q 'w 'e)) #t)
@@ -393,7 +431,7 @@
 (display "\nEnd of method testing\n")
 (define new?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'new))))
+    (and (pair? xs) (eq? (car xs) 'new))))
 (display "\nTesting new \n")
 (equal? (new? (make-new 1 3)) #t)
 (equal? (new? (make-new '() '())) #t)
@@ -401,7 +439,7 @@
 (display "\nEnd of new testig\n")
 (define supercall?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'super))))
+    (and (pair? xs) (eq? (car xs) 'super))))
 (display "\nTesting supercall\n")
 (equal? (supercall? (make-supercall 1 2)) #t)
 (equal? (supercall? (make-supercall '() '())) #t)
@@ -409,7 +447,7 @@
 (display "\nEnd of supercall\n")
 (define seq?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'sequence))))
+    (and (pair? xs) (eq? (car xs) 'sequence))))
 (display "\nTesting seq\n")
 (equal? (seq? (make-seq 1)) #t)
 (equal? (seq? (make-seq 'a)) #t)
@@ -417,7 +455,7 @@
 (display "\nEnd of seq testing\n")
 (define procs?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'procedures))))
+    (and (pair? xs) (eq? (car xs) 'procedures))))
 (display "\nTesting procs\n")
 (equal? (procs? (make-procs 1 2)) #t)
 (equal? (procs? (make-procs 'a 'b)) #t)
@@ -425,7 +463,7 @@
 (display "\nEnd of procs testing\n")
 (define if?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'if))))
+    (and (pair? xs) (eq? (car xs) 'if))))
 (display "\nTesting if? \n")
 (equal? (if? (make-if 1 2 3)) #t)
 (equal? (if? (make-if 'a 'b 'c)) #t)
@@ -433,7 +471,7 @@
 (display "\nEnd of if testing\n")
 (define assign?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'assign!))))
+    (and (pair? xs) (eq? (car xs) 'assign!))))
 (display "\nTesting assign\n")
 (equal? (assign? (make-assign 1 2)) #t)
 (equal? (assign? (make-assign 'a 'b)) #t)
@@ -441,7 +479,7 @@
 (display "\nEnd of assign\n")
 (define equality?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'equality?))))
+    (and (pair? xs) (eq? (car xs) 'equality?))))
 (display "\nTesting equal\n")
 (equal? (equality? (make-equal 'a 'b)) #t)
 (equal? (equality? (make-equal 1 2)) #t)
@@ -449,7 +487,7 @@
 (display "\nEnd of equal\n")
 (define proc?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'proc))))
+    (and (pair? xs) (eq? (car xs) 'proc))))
 (display "\nTesting proc?\n")
 (equal? (proc? (make-proc 'a 'b)) #t)
 (equal? (proc? (make-proc 1 2)) #t)
@@ -457,7 +495,7 @@
 (display "\nEnd of proc testing\n")
 (define access?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'send))))
+    (and (pair? xs) (eq? (car xs) 'send))))
 (display "\nTesting access\n")
 (equal? (access? (make-access 'a 'b)) #t)
 (equal? (access? (make-access 1 2)) #t)
@@ -465,7 +503,7 @@
 (display "\nEnd of access\n")
 (define funcall?
   (lambda (xs)
-    (and (pair? xs) (equal? (car xs) 'funcall))))
+    (and (pair? xs) (eq? (car xs) 'funcall))))
 (display "\nTesting funcall\n")
 (equal? (funcall? (make-funcall 'a 'b)) #t)
 (equal? (funcall? (make-funcall 1 2)) #t)
@@ -475,7 +513,7 @@
 
 (define program-decls
   (lambda (xs)
-    (cadr xs)))
+    (arg1 xs)))
 (display "\nTesting program-decls\n")
 (equal? (program-decls (make-program 1 2)) 1)
 (equal? (program-decls (make-program 'a 'b)) 'a)
@@ -483,7 +521,7 @@
 (display "\nEnd of program-decls\n")
 (define program-exp
   (lambda (xs)
-    (caddr xs)))
+    (arg2 xs)))
 (display "\nTesting program-exp\n")
 (equal? (program-exp (make-program 1 2)) 2)
 (equal? (program-exp (make-program 'a 'b)) 'b)
@@ -491,7 +529,7 @@
 (display "\nEnd of program-exp\n")
 (define class-name
   (lambda (xs)
-    (cadr xs)))
+    (arg1 xs)))
 (display "\nTesting class-name\n")
 (equal? (class-name (make-class 1 2 3 4)) 1)
 (equal? (class-name (make-class 'a 'b 'c 'd)) 'a)
@@ -499,7 +537,7 @@
 (display "\nEnd of class-name testing\n")
 (define class-parent
   (lambda (xs)
-    (caddr xs)))
+    (arg2 xs)))
 (display "\nTesting class-parent\n")
 (equal? (class-parent (make-class 1 2 3 4)) 2)
 (equal? (class-parent (make-class 'a 'b 'c 'd)) 'b)
@@ -507,7 +545,7 @@
 (display "\nEnd of class-parent testing\n")
 (define class-fields
   (lambda (xs)
-    (cadddr xs)))
+  (car (cdr (cdr (cdr xs))))))
 (display "\nTesting class fields\n")
 (equal? (class-fields (make-class 1 2 3 4)) 3)
 (equal? (class-fields (make-class 'a 'b 'c 'd)) 'c)
@@ -515,7 +553,7 @@
 (display "\nEnd of class fields\n")
 (define class-methods
   (lambda (xs)
-    (cadddr  (cdr xs))))
+   (car (cdr (cdr (cdr (cdr xs)))))))
 (display "\nTesting class-methods\n")
 (equal? (class-methods (make-class 1 2 3 4)) 4)
 (equal? (class-methods (make-class 'a 'b 'c 'd)) 'd)
@@ -523,7 +561,7 @@
 (display "\nEnd of class methods testing\n")
 (define method-name
   (lambda (xs)
-    (cadr xs)))
+    (arg1 xs)))
 (display "\nTesting method-name\n")
 (equal? (method-name (make-class 1 2 3 4)) 1)
 (equal? (method-name (make-class 'a 'b 'c 'd)) 'a)
@@ -531,7 +569,7 @@
 (display "\nEnd of method-name testing\n")
 (define method-formals
   (lambda (xs)
-    (caddr xs)))
+    (arg2 xs)))
 (display "\nTesting method-formals\n")
 (equal? (method-formals (make-class 1 2 3 4)) 2)
 (equal? (method-formals (make-class 'a 'b 'c 'd)) 'b)
@@ -539,7 +577,7 @@
 (display "\nEnd of method-formals testing\n")
 (define method-exp
   (lambda (xs)
-    (cadddr xs)))
+     (car (cdr (cdr (cdr xs))))))
 (display "\nTesting method-exp\n")
 (equal? (method-exp (make-class 1 2 3 4)) 3)
 (equal? (method-exp (make-class 'a 'b 'c 'd)) 'c)
@@ -547,7 +585,7 @@
 (display "\nEnd of method-exp\n")
 (define new-name
   (lambda (xs)
-    (cadr xs)))
+    (arg1 xs)))
 (display "\nTesting new-name\n")
 (equal? (new-name (make-new 1 2)) 1)
 (equal? (new-name (make-new 'a 'b)) 'a)
@@ -555,11 +593,9 @@
 (display "\nEnd of new-name\n")
 (define new-rands
   (lambda (xs)
-    (cadr xs)))
+    (arg2 xs)))
 (display "\nTesting new-rands\n")
-(equal? (new-rands (make-new 1 2)) 1)
-(equal? (new-rands (make-new 'a 'b)) 'a)
-(equal? (new-rands (make-new '() '())) '())
+
 (display "\nEnd of new-rands\n")
 (define supercall-name
   (lambda (xs)
@@ -577,17 +613,17 @@
 (equal? (supercall-rands (make-supercall 'a 'b)) 'b)
 (equal? (supercall-rands (make-supercall '() '())) '())
 (display "\nEnd of supercall-rands\n")
-(define seq-exp
+(define seq-exps
   (lambda (xs)
-    (arg1 xs)))
+    (cdr xs)))
 (display "\nTesting seq-exps\n")
-(equal? (seq-exp (make-seq 1)) 1)
-(equal? (seq-exp (make-seq 'a)) 'a)
-(equal? (seq-exp (make-seq '())) '())
+(equal? (seq-exps (make-seq 1)) 1)
+(equal? (seq-exps (make-seq 'a)) 'a)
+(equal? (seq-exps (make-seq '())) '())
 (display "\nEnd of seq-exps\n")
 (define procs-defs
   (lambda (xs)
-    (cadr xs)))
+    (arg1 xs)))
 (display "\nTesting procs-def\n")
 (equal? (procs-defs (make-procs 1 2)) 1)
 (equal? (procs-defs (make-procs 'a 'b)) 'a)
@@ -595,7 +631,7 @@
 (display "\nEnd of prcs-def testing\n")
 (define procs-exp
   (lambda (xs)
-    (caddr xs)))
+    (arg2 xs)))
 (display "\nTesting procs-expp\n")
 (equal? (procs-exp (make-procs 1 2)) 2)
 (equal? (procs-exp (make-procs 'a 'b)) 'b)
@@ -603,7 +639,7 @@
 (display "\nEnd of procs-exp testing\n")
 (define if-exp1
   (lambda (xs)
-    (cadr xs)))
+    (arg1 xs)))
 (display "\nTesting if-exp1\n")
 (equal? (if-exp1 (make-if 1 2 3)) 1)
 (equal? (if-exp1 (make-if 'a 'b 'c)) 'a)
@@ -611,7 +647,7 @@
 (display "\nEnd of if-exp1 testing\n")
 (define if-exp2
   (lambda (xs)
-    (caddr xs)))
+    (arg2 xs)))
 (display "\nTesting if-exp2\n")
 (equal? (if-exp2 (make-if 1 2 3)) 2)
 (equal? (if-exp2 (make-if 'a 'b 'c)) 'b)
@@ -619,7 +655,7 @@
 (display "\nEnd of if-exp2 testing\n")
 (define if-exp3
   (lambda (xs)
-    (cadddr xs)))
+   (car (cdr (cdr (cdr xs))))))
 (display "\nTesting if-exp3\n")
 (equal? (if-exp3 (make-if 1 2 3)) 3)
 (equal? (if-exp3 (make-if 'a 'b 'c)) 'c)
@@ -627,7 +663,7 @@
 (display "\nEnd of if-exp3 testing\n")
 (define assign-var
   (lambda (xs)
-    (cadr xs)))
+    (arg1 xs)))
 (display "\nTesting assign-var\n")
 (equal? (assign-var (make-assign 1 2)) 1)
 (equal? (assign-var (make-assign 'a 'b)) 'a)
@@ -635,7 +671,7 @@
 (display "\nEnd of assign-var testing\n")
 (define assign-exp
   (lambda (xs)
-    (caddr xs)))
+    (arg2 xs)))
 (display "\nTesting assign-exp\n")
 (equal? (assign-exp (make-assign 1 2)) 2)
 (equal? (assign-exp (make-assign 'a 'b)) 'b)
@@ -643,7 +679,7 @@
 (display "\nEnd of assign-exp testing\n")
 (define proc-formals
   (lambda (xs)
-    (cadr xs)))
+    (arg1 xs)))
 (display "\nTesting proc-formals\n")
 (equal? (proc-formals (make-proc 1 2)) 1)
 (equal? (proc-formals (make-proc 'a 'b)) 'a)
@@ -651,10 +687,10 @@
 (display "\nEnd of proc-formals\n")
 (define proc-exp
   (lambda (xs)
-    (cadr xs)))
+    (arg2 xs)))
 (display "\nTesting proc-exp\n")
-(equal? (proc-exp (make-proc 1 2)) 1)
-(equal? (proc-exp (make-proc 'a 'b)) 'a)
+(equal? (proc-exp (make-proc 1 2)) 2)
+(equal? (proc-exp (make-proc 'a 'b)) 'b)
 (equal? (proc-exp (make-proc '() '())) '())
 (display "\nEnd of proc-exp\n")
 (define access-exp
@@ -675,17 +711,135 @@
 (display "\nEnd of access-message\n")
 (define funcall-rator
   (lambda (xs)
-    (cadr xs)))
+    (arg2 xs)))
 (display "\nTesting funcall-rator\n")
-(equal? (funcall-rator (make-funcall 1 2)) 1)
-(equal? (funcall-rator (make-funcall 'a 'b)) 'a)
-(equal? (funcall-rator (make-funcall '() '())) '())
+
 (display "\nEnd of funcall-rator testing\n")
 (define funcall-rands
   (lambda (xs)
-    (caddr xs)))
-(display "\nTesting funcall-rands\n")
-(equal? (funcall-rands (make-funcall 1 2)) 2)
-(equal? (funcall-rands (make-funcall 'a 'b)) 'b)
-(equal? (funcall-rands (make-funcall '() '())) '())
-(display "\nEnd of funcall-rands\n")
+    (cddr xs)))
+
+
+(define parse-lang
+  (parser
+   (start program)
+   (end EOF)
+   (tokens value-tokens op-tokens)
+   (error (lambda (a b c) (error 'parse-small-lang "error occurred, ~v ~v ~v" a b c)))
+   (grammar
+        
+    (let-def ((ID EQ1 expression) (list $1 $3)))
+    (let-defs ((let-def) (list $1))
+             ((let-def COMMA let-defs) (cons $1 $3)))
+    (proc-def (( ID OP formals CP EQ1 expression) (list $1 (make-proc $3 $6))))
+    (proc-defs ((proc-def) (list $1))
+              ((proc-def COMMA proc-defs) (cons $1 $3)))
+   
+    (exprsions ((expression) (list $1))
+           ((expression SC exprsions) (cons $1 $3)))
+    (expression ((LET let-defs IN expression) (make-let $2 $4))
+          ((PROCEDURE proc-defs IN expression) (make-procs $2 $4))
+          (( OBC exprsions CBC ) (make-seq $2))
+          (( IF expression THEN expression ELSE expression) (make-if $2 $4 $6))
+          ((BACKSLASH formals BACKSLASH ARROW expression) (make-proc $2 $5))
+          (( NEW ID OP actuals CP) (make-new $2 $4))
+          (( SUPER ID OP actuals CP) (make-supercall $2 $4))
+          (( ID EQ1 expression) (make-assign $1 $3))
+          (( comp-expression ) $1))
+    (comp-expression ((math-expression COMP math-expression) (make-equal $1 $3))
+              ((math-expression) $1))
+    (math-expression ((math-expression + term) (make-sum $1 $3))
+               ((math-expression - term) (make-diff $1 $3))
+               ((term) $1))
+   
+    (term (( term * factor) (make-prod $1 $3))
+          (( term / factor) (make-quo $1 $3))
+          (( factor) $1))
+    (factor ((simple) $1)
+            ((NUM) $1)
+            ((- factor) (make-neg $2)))
+    (simple ((ID) $1)
+            ((simple PERIOD ID) (make-access $1 $3))
+            ((simple OP actuals CP) (make-funcall $1 $3))
+            ((OP expression CP) $2))
+    (actuals (() null)
+             ((nonemptyactuals) $1))
+    (nonemptyactuals ((expression) (list $1))
+                     ((expression COMMA nonemptyactuals) (cons $1 $3)))
+    (formals (() null)
+             ((nonemptyformals) $1))
+    (nonemptyformals (( ID) (list $1))
+                     (( ID COMMA nonemptyformals) (cons $1 $3)))
+    (program ((class-declarationss expression) (make-program $1 $2)))
+    (class-declaration ((CLASS ID EXTENDS ID OBC fielddecls methdecls CBC) (make-class $2 $4 $6 $7)))
+    (class-declarationss (() null)
+                ((class-declaration class-declarationss) (cons $1 $2)))
+   
+    (fielddecls (() null)
+                ((FIELD ID fielddecls) (cons $2 $3)))
+    (methdecls (() null)
+               ((METHOD ID OP formals CP expression  methdecls) (cons (make-method $2 $4 $6) $7)))
+    )))
+
+(let* ((example "let x = -(1+1) + 3 * 4, y = 0 in {y = 14; x == y}")
+       (i (open-input-string example)))
+  (equal? (parse-lang (lambda () (get-token i)))
+          '(program
+            ()
+            (with-bindings
+             ((x (sum (neg (sum 1 1)) (prod 3 4))) (y 0))
+             (sequence (assign! y 14) (equality? x y))))))
+
+(let* ((example 
+"let pred = \\k\\->k-1 
+  in procedures f(n) = if n == 0
+                       then 1 
+                       else n * f(pred(n)) 
+      in f(4+1)
+")
+       (i (open-input-string example)))
+  (equal? (parse-lang (lambda () (get-token i)))
+          '(program
+            ()
+            (with-bindings
+             ((pred (proc (k) (diff k 1))))
+             (procedures
+              ((f
+                (proc
+                 (n)
+                 (if (equality? n 0) 1 (prod n (funcall f (funcall pred n)))))))
+              (funcall f (sum 4 1)))))))
+
+
+(let* ((example 
+"class point extends object{
+  field x
+  field y
+  method init(initx, inity){
+   x = initx;
+   y = inity
+  }
+  method move(dx, dy){
+   x = x + dx;
+   y = y + dy
+  }
+}
+let ob = new point(2+3, 1+4*7) in
+  ob.move(0.1,3)
+")
+       (i (open-input-string example)))
+  (equal? (parse-lang (lambda () (get-token i)))
+          '(program
+            ((class point object
+                    (x y)
+                    ((method
+                      init
+                      (initx inity)
+                      (sequence (assign! x initx) (assign! y inity)))
+                     (method
+                      move
+                      (dx dy)
+                      (sequence (assign! x (sum x dx)) (assign! y (sum y dy)))))))
+            (with-bindings
+             ((ob (new point (sum 2 3) (sum 1 (prod 4 7)))))
+             (funcall (send ob move) 0.1 3)))))
