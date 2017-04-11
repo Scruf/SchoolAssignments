@@ -303,10 +303,24 @@
   (lambda (xs ys)
     (list '= xs ys)))
 (define nex-exp cadr)
-(define make-let
-  (lambda (xs)
-    (list 'let xs)))
 
+
+
+(define make-letstar
+  (lambda (xs ys)
+    (cond
+      [(null? xs) ys]
+      [(make-let (caar xs) (cadr (car xs))(make-letstar (cdr xs) ys))])))
+
+(define make-seq
+  (lambda (xs)
+    (cond
+      [(null? xs) '()]
+      [(else
+       (cond
+        [(null? (cdr xs)) (car xs)]
+        [(else make-let '*temp* (car xs) (make-seq (cdr xs)))]))])))
+      
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; parse-lang: (() -> token) -> SmallLangExp
 (define parse-lang
