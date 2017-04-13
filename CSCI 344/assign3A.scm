@@ -270,38 +270,81 @@
 (define diff?
   (lambda (xs)
     (and (pair? xs)(eq? (car xs) '-))))
+(display "Testing diff?\n")
+(eq? (diff? '(- 1 2)) #t)
+(eq? (diff? '(+ 1 2)) #f)
+(eq? (diff? '(2 2 2)) #f)
+(display "End of diff? testing\n")
 
 (define prod?
   (lambda (xs)
     (and (pair? xs) (eq? (car xs) '*))))
+(display "Testing prod?\n")
+(eq? (prod? '(* 1 2)) #t)
+(eq? (prod? '(+ 1 2)) #f)
+(eq? (prod? '(2 2 2)) #f)
+(display "End of prod? testing\n")
 (define quo?
   (lambda (xs)
     (and (pair? xs) (eq? (car xs) '/))))
+(display "Testing quo?\n")
+(eq? (quo? '(/ 1 2)) #t)
+(eq? (quo? '(+ 1 2)) #f)
+(eq? (quo? '(2 2 2)) #f)
+(display "End of quo? testing\n")
 (define neg?
   (lambda (xs)
     (and (pair? xs) (eq? (car xs) 'neg))))
+(display "Testing neg? \n")
+(eq? (neg? '(- 2)) #t)
+(eq? (neg? '(+ 1 2)) #f)
+(eq? (neg? '(2 2 2)) #f)
+(display "End of neg? testing\n")
 (define equality?
   (lambda (xs)
     (and (pair? xs)(eq? (car xs) '=))))
+(display "Testing equality?\n")
+(eq? (equality? '(= 1 2)) #t)
+(eq? (equality? '(+ 1 2)) #f)
+(eq? (equality? '(2 2 2)) #f)
+(display "End of equality tetsting\n")
 
 (define make-diff
   (lambda (xs ys)
     (list '- xs ys)))
+(display "Testing make-diff\n")
+(equal? (make-diff 2 3) '(- 2 3))
+(display "End of make-diff testing\n")
 (define make-prod
   (lambda (xs ys)
     (list '* xs ys)))
+(display "Testing make-prod\n")
+(equal? (make-prod 2 3) '(* 2 3))
+(display "End of make-prod\n")
 (define make-quo
   (lambda (xs ys)
     (list '/ xs ys)))
+(display "Testing make-quo\n")
+(equal? (make-quo 2 3) '(/ 2 3))
+(display " End of make-quo\n")
 (define make-sum
   (lambda (xs ys)
     (list '+ xs ys)))
+(display "Testing make-sum testing\n")
+(equal? (make-sum 2 3) '(+ 2 3))
+(display "End of make-sum\n")
 (define make-neg
   (lambda (xs)
     (list 'neg xs)))
+(display "Testing make-neg\n")
+(equal? (make-neg 2) '(neg 2))
+(display "End of make-neg testing\n")
 (define make-equality
   (lambda (xs ys)
     (list '= xs ys)))
+(display "Tesing make-equality\n")
+(equal? (make-equality 2 3) '(= 2 3))
+(display "End of make-equality testing\n")
 (define nex-exp cadr)
 
 
@@ -316,11 +359,32 @@
   (lambda (xs)
     (cond
       [(null? xs) '()]
-      [(else
-       (cond
-        [(null? (cdr xs)) (car xs)]
-        [(else make-let '*temp* (car xs) (make-seq (cdr xs)))]))])))
-      
+      [(cond
+               [(null? (cdr xs)) (car xs)]
+               [(make-let '*temp* (car xs) (make-seq (cdr xs)))])])))
+(display "Testing make-seq\n")
+(equal? (make-seq '(+)) '+)
+(equal? (make-seq '(a b)) '(let *temp* a b))
+
+(display "End of make-seq testing\n")
+(display "Tesing make-letstar\n")
+(equal? (make-letstar '() '(+ x 1)) '(+ x 1))
+(equal? (make-letstar '((x 1) (y 2)) '(+ 1 2)) '(let x 1 (let y 2 (+ 1 2))))
+(display "End of make-letstr testing\n")
+(define make-curried-proc
+  (lambda (xs ys)
+    (cond
+      [(null? xs) (make-proc '*temp* ys)]
+      [(cond
+         [(null? (cdr xs)) (make-proc (car xs) ys)]
+         [(make-proc (car xs) (make-curried-proc (cdr xs) ys))])])))
+(define make-curried-funcall
+  (lambda (xs ys)
+    (cond
+      [(null? ys) (make-funcall xs '0)]
+      [(cond
+         [(null? (cdr ys)) (make-funcall xs ys)]
+         [(make-curried-funcall (make-funcall xs (car ys)) (cadr ys))])])))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; parse-lang: (() -> token) -> SmallLangExp
 (define parse-lang
@@ -431,6 +495,52 @@
                                (k (+ v1 v2) store3))
                              store2))
                   store))
+        ((diff? exp)
+           (meaning (arg1 exp)
+                  env
+                  (lambda (v1 store2)
+                    (meaning (arg2 exp)
+                             env
+                             (lambda (v2 store3)
+                               (k (- v1 v2) store3))
+                             store2))
+                  store))
+        ((prod? exp)
+           (meaning (arg1 exp)
+                  env
+                  (lambda (v1 store2)
+                    (meaning (arg2 exp)
+                             env
+                             (lambda (v2 store3)
+                               (k (* v1 v2) store3))
+                             store2))
+                  store))
+       ((quo? exp)
+         (meaning (arg1 exp)
+                  env
+                  (lambda (v1 store2)
+                    (meaning (arg2 exp)
+                             env
+                             (lambda (v2 store3)
+                               (k (/ v1 v2) store3))
+                             store2))
+                  store))
+        ((neg? exp)
+          (meaning (arg1 exp)
+                  env
+                  (lambda (v1 store2)
+                    (k (* -1 v1) store2))
+                  store))
+        ((equality? exp)
+         (meaning (arg1 exp)
+                  env
+                  (lambda (v1 store2)
+                    (meaning (arg2 exp)
+                             env
+                             (lambda (v2 store3)
+                               (k (= v1 v2) store3))
+                             store2))
+                  store))
         ((let? exp)
          (meaning (let-exp exp)
                   env
@@ -479,3 +589,4 @@
 (let* ((example "2+3+4")
        (i (open-input-string example)))
     (= (meaning (parse-lang (lambda () (get-token i))) empty-env init-k empty-store) 9))
+
