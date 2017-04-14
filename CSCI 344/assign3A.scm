@@ -378,13 +378,22 @@
       [(cond
          [(null? (cdr xs)) (make-proc (car xs) ys)]
          [(make-proc (car xs) (make-curried-proc (cdr xs) ys))])])))
+(display "Testing make-curried-proc\n")
+(equal? (make-curried-proc '() '(a b)) (make-proc '*temp* '(a b)))
+(equal? (make-curried-proc '(a) '(b c)) (make-proc 'a '(b c)))
+(display "End of make-curried-proc\n")
 (define make-curried-funcall
   (lambda (xs ys)
     (cond
-      [(null? ys) (make-funcall xs '0)]
-      [(cond
-         [(null? (cdr ys)) (make-funcall xs ys)]
-         [(make-curried-funcall (make-funcall xs (car ys)) (cadr ys))])])))
+      [(null? ys) (make-funcall xs 0)]
+      [(null? (cdr ys)) (make-funcall xs (car ys))]
+      [(make-curried-funcall (make-funcall xs (car ys)) (cdr ys))]))) 
+
+(display "Testing make-curried-funcall\n")
+(equal? (make-curried-funcall 'x '()) (make-funcall 'x 0))
+
+(equal? (make-curried-funcall 'x '(a b)) (make-curried-funcall (make-funcall 'x 'a) '(b)))
+(display "End of make-curried-funcall\n")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; parse-lang: (() -> token) -> SmallLangExp
 (define parse-lang
@@ -589,4 +598,3 @@
 (let* ((example "2+3+4")
        (i (open-input-string example)))
     (= (meaning (parse-lang (lambda () (get-token i))) empty-env init-k empty-store) 9))
-
